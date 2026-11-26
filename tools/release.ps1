@@ -17,7 +17,9 @@ $repo = gh repo view --json nameWithOwner -q .nameWithOwner
 if (-not $repo) { throw "No GitHub repo found for this folder" }
 $base = "https://github.com/$repo/releases/latest/download"
 
-if (gh release view "v$versionName" 2>$null) { throw "Release v$versionName already exists: bump the version first" }
+# gh writes "release not found" to stderr, which PowerShell 5.1 would turn into a terminating error.
+cmd /c "gh release view v$versionName >nul 2>&1"
+if ($LASTEXITCODE -eq 0) { throw "Release v$versionName already exists: bump the version first" }
 
 .\gradlew.bat :app:assembleDebug "-PupdateUrl=$base/version.json"
 if ($LASTEXITCODE -ne 0) { throw "Build failed" }
