@@ -1,6 +1,10 @@
 package com.sportassistant.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Box
+import androidx.health.connect.client.PermissionController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
@@ -78,7 +82,18 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
     ) { padding ->
         NavHost(nav, startDestination = "today", modifier = Modifier.padding(padding)) {
             composable("today") {
-                TodayScreen(plan, stats, onStart = { nav.navigate("workout") }, onOpen = { nav.navigate("exercise/${it.id}") })
+                val health by vm.health.collectAsState()
+                val grant = rememberLauncherForActivityResult(PermissionController.createRequestPermissionResultContract()) { vm.refreshHealth() }
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshHealth() }
+                TodayScreen(
+                    plan,
+                    stats,
+                    health,
+                    onConnect = { grant.launch(vm.healthPermissions) },
+                    onRefresh = vm::refreshHealth,
+                    onStart = { nav.navigate("workout") },
+                    onOpen = { nav.navigate("exercise/${it.id}") },
+                )
             }
             composable("walk") {
                 val track by vm.track.collectAsState()

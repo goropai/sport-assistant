@@ -16,7 +16,12 @@ adapts to complaints, workout runner with timers, points / streak / badges, remi
 Also: camera rep counting (ML Kit Pose) for squats, push-ups, wall push-ups and glute bridge;
 GPS walk tracking (foreground service, offline route preview, distance/pace/kcal, history).
 
-Not yet: Health Connect (Redmi Watch 5 Lite), food photo log,
+Watch data (Redmi Watch 5 Lite): read-only from Health Connect, where Mi Fitness writes steps, heart
+rate, sleep, active calories and distance. Shown on the Today screen.
+
+Toolchain: AGP 9.5, Gradle 9.9, Kotlin 2.4, compileSdk 37.1.
+
+Not yet: food photo log,
 photo-based observations, exercise illustrations (emoji placeholders for now).
 
 ## Updates

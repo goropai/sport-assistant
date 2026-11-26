@@ -40,6 +40,7 @@ import com.sportassistant.data.Exercise
 import com.sportassistant.data.Exercises
 import com.sportassistant.data.Profile
 import com.sportassistant.data.Stats
+import com.sportassistant.health.HealthUiState
 import com.sportassistant.pose.RepTrackers
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -66,7 +67,15 @@ private fun ExerciseRow(ex: Exercise, onClick: () -> Unit) {
 }
 
 @Composable
-fun TodayScreen(plan: List<Exercise>, stats: Stats, onStart: () -> Unit, onOpen: (Exercise) -> Unit) {
+fun TodayScreen(
+    plan: List<Exercise>,
+    stats: Stats,
+    health: HealthUiState,
+    onConnect: () -> Unit,
+    onRefresh: () -> Unit,
+    onStart: () -> Unit,
+    onOpen: (Exercise) -> Unit,
+) {
     val minutes = (plan.sumOf { it.estimatedSeconds } / 60).coerceAtLeast(1)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
@@ -74,6 +83,7 @@ fun TodayScreen(plan: List<Exercise>, stats: Stats, onStart: () -> Unit, onOpen:
             Spacer(Modifier.height(4.dp))
             Text("${stringResource(R.string.today_streak, stats.currentStreak)}  ·  ${stringResource(R.string.today_points, stats.points)}  ·  ${stringResource(R.string.today_minutes, minutes)}")
         }
+        item { HealthCard(health, onConnect, onRefresh) }
         items(plan, key = { it.id }) { ex -> ExerciseRow(ex) { onOpen(ex) } }
         item { Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.today_start)) } }
         item { Text(stringResource(R.string.disclaimer_medical), style = MaterialTheme.typography.bodySmall) }

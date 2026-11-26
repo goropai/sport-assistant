@@ -11,6 +11,8 @@ import com.sportassistant.data.Stats
 import com.sportassistant.data.Walk
 import com.sportassistant.data.WorkoutLog
 import com.sportassistant.data.computeStats
+import com.sportassistant.health.HealthRepository
+import com.sportassistant.health.HealthUiState
 import com.sportassistant.reminders.Reminders
 import com.sportassistant.track.TrackRecorder
 import com.sportassistant.track.TrackState
@@ -64,6 +66,16 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         walkDao.observeRecent().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val track: StateFlow<TrackState> = TrackRecorder.state
+
+    private val healthRepo = HealthRepository(app)
+    val healthPermissions: Set<String> = healthRepo.permissions
+
+    private val _health = MutableStateFlow<HealthUiState>(HealthUiState.Loading)
+    val health: StateFlow<HealthUiState> = _health.asStateFlow()
+
+    fun refreshHealth() {
+        viewModelScope.launch { _health.value = healthRepo.load() }
+    }
 
     private val _update = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val update: StateFlow<UpdateState> = _update.asStateFlow()

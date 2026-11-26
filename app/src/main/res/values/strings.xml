@@ -24,6 +24,24 @@
     <string name="walk_notif_title">Walk in progress</string>
     <string name="walk_notif_text">Recording your route</string>
 
+    <!-- Watch / Health Connect -->
+    <string name="health_title">From your watch</string>
+    <string name="health_loading">Loading…</string>
+    <string name="health_unavailable">Health Connect is not available on this device.</string>
+    <string name="health_update_required">Health Connect needs to be installed or updated from the app store.</string>
+    <string name="health_needs_permission">Allow reading steps, heart rate, sleep and activity from Health Connect. Data stays on your phone. Your Redmi Watch syncs there through the Mi Fitness app.</string>
+    <string name="health_connect">Connect Health Connect</string>
+    <string name="health_error">Could not read data from Health Connect.</string>
+    <string name="health_no_data">No data for today yet. Open Mi Fitness so it syncs your watch, then refresh.</string>
+    <string name="health_refresh">Refresh</string>
+    <string name="health_steps_of">%1$d / %2$d steps</string>
+    <string name="health_active_kcal">Active kcal</string>
+    <string name="health_distance">Distance</string>
+    <string name="health_sleep">Sleep</string>
+    <string name="health_sleep_fmt">%1$d h %2$02d min</string>
+    <string name="health_hr_last">Heart rate: %1$d bpm</string>
+    <string name="health_hr_range">today avg %1$d, range %2$d–%3$d</string>
+
     <!-- About / updates -->
     <string name="settings_about">About</string>
     <string name="settings_version">Version %1$s</string>

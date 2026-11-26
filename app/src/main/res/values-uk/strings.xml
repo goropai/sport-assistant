@@ -24,6 +24,24 @@
     <string name="walk_notif_title">Триває прогулянка</string>
     <string name="walk_notif_text">Записую маршрут</string>
 
+    <!-- Watch / Health Connect -->
+    <string name="health_title">З годинника</string>
+    <string name="health_loading">Завантаження…</string>
+    <string name="health_unavailable">Health Connect недоступний на цьому пристрої.</string>
+    <string name="health_update_required">Health Connect потрібно встановити або оновити з магазину застосунків.</string>
+    <string name="health_needs_permission">Дозвольте читати кроки, пульс, сон і активність із Health Connect. Дані залишаються на вашому телефоні. Redmi Watch синхронізується туди через застосунок Mi Fitness.</string>
+    <string name="health_connect">Підключити Health Connect</string>
+    <string name="health_error">Не вдалося прочитати дані з Health Connect.</string>
+    <string name="health_no_data">Даних за сьогодні поки немає. Відкрийте Mi Fitness, щоб він синхронізував годинник, і оновіть.</string>
+    <string name="health_refresh">Оновити</string>
+    <string name="health_steps_of">%1$d / %2$d кроків</string>
+    <string name="health_active_kcal">Активні ккал</string>
+    <string name="health_distance">Дистанція</string>
+    <string name="health_sleep">Сон</string>
+    <string name="health_sleep_fmt">%1$d год %2$02d хв</string>
+    <string name="health_hr_last">Пульс: %1$d уд/хв</string>
+    <string name="health_hr_range">сьогодні середній %1$d, діапазон %2$d–%3$d</string>
+
     <!-- About / updates -->
     <string name="settings_about">Про застосунок</string>
     <string name="settings_version">Версія %1$s</string>
