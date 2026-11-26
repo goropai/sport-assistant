@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Спорт-помічник</string>
+
+    <string name="tab_today">Сьогодні</string>
+    <string name="tab_walk">Прогулянка</string>
+    <string name="tab_library">Вправи</string>
+
+    <!-- Walk -->
+    <string name="walk_start">Почати прогулянку</string>
+    <string name="walk_finish">Завершити прогулянку</string>
+    <string name="walk_distance">Дистанція</string>
+    <string name="walk_time">Час</string>
+    <string name="walk_pace">Темп</string>
+    <string name="walk_pace_unit">хв/км</string>
+    <string name="walk_kcal">ккал</string>
+    <string name="walk_km">%1$.2f км</string>
+    <string name="walk_waiting">Шукаю сигнал GPS… Вийдіть надвір для швидшого визначення.</string>
+    <string name="walk_permission_hint">Маршрут записується за GPS і зберігається лише на цьому пристрої. Геолокація використовується тільки під час прогулянки.</string>
+    <string name="walk_gps_off">Геолокацію (GPS) вимкнено. Увімкніть її в налаштуваннях системи й спробуйте знову.</string>
+    <string name="walk_too_short">Прогулянка закоротка, щоб її зберегти (менше 100 м).</string>
+    <string name="walk_history">Попередні прогулянки</string>
+    <string name="walk_channel_name">Відстеження прогулянки</string>
+    <string name="walk_notif_title">Триває прогулянка</string>
+    <string name="walk_notif_text">Записую маршрут</string>
+
+    <!-- About / updates -->
+    <string name="settings_about">Про застосунок</string>
+    <string name="settings_version">Версія %1$s</string>
+    <string name="update_check">Перевірити оновлення</string>
+    <string name="update_checking">Перевіряю…</string>
+    <string name="update_uptodate">У вас остання версія.</string>
+    <string name="update_available">Доступна версія %1$s.</string>
+    <string name="update_install">Завантажити й встановити</string>
+    <string name="update_downloading">Завантажую…</string>
+    <string name="update_not_configured">Джерело оновлень не налаштоване в цій збірці.</string>
+    <string name="update_error">Не вдалося перевірити оновлення. Спробуйте пізніше.</string>
+    <string name="update_hash_mismatch">Завантажений файл не пройшов перевірку й був видалений.</string>
+    <string name="update_allow_install">Дозвольте встановлення з цього застосунку в налаштуваннях, що щойно відкрилися, поверніться й натисніть кнопку ще раз.</string>
+    <string name="tab_progress">Прогрес</string>
+    <string name="tab_settings">Налаштування</string>
+
+    <!-- Onboarding -->
+    <string name="onb_title">Давайте познайомимось</string>
+    <string name="onb_subtitle">Кілька запитань, щоб скласти м\'який щоденний план для сидячого способу життя.</string>
+    <string name="onb_age">Вік</string>
+    <string name="onb_height">Зріст, см</string>
+    <string name="onb_weight">Вага, кг</string>
+    <string name="onb_sitting">Годин сидячи на день: %1$d</string>
+    <string name="onb_activity">Поточна активність</string>
+    <string name="activity_low">Низька</string>
+    <string name="activity_medium">Середня</string>
+    <string name="activity_high">Висока</string>
+    <string name="onb_complaints">Що вас турбує?</string>
+    <string name="onb_start">Почати</string>
+    <string name="disclaimer_medical">Застосунок підтримує здоровий спосіб життя і не є медичним виробом. Він не ставить діагнозів і не лікує. Якщо відчуваєте біль, запаморочення або маєте хронічне захворювання, спершу проконсультуйтеся з лікарем.</string>
+
+    <string name="complaint_neck">Шия</string>
+    <string name="complaint_back">Спина</string>
+    <string name="complaint_shoulders">Плечі</string>
+    <string name="complaint_eyes">Очі</string>
+    <string name="complaint_legs">Ноги</string>
+
+    <!-- Today -->
+    <string name="today_title">План на сьогодні</string>
+    <string name="today_start">Почати тренування</string>
+    <string name="today_streak">Серія: %1$d дн.</string>
+    <string name="today_points">Бали: %1$d</string>
+    <string name="today_minutes">~%1$d хв</string>
+
+    <!-- Categories -->
+    <string name="cat_mobility">Рухливість</string>
+    <string name="cat_stretch">Розтяжка</string>
+    <string name="cat_strength">Сила</string>
+    <string name="cat_core">Корпус</string>
+    <string name="cat_cardio">Кардіо</string>
+    <string name="cat_eyes">Очі</string>
+
+    <!-- Workout -->
+    <string name="workout_step">Вправа %1$d з %2$d</string>
+    <string name="workout_seconds">%1$d с</string>
+    <string name="workout_reps">%1$d повторень</string>
+    <string name="workout_minutes">%1$d хв</string>
+    <string name="workout_next">Далі</string>
+    <string name="workout_finish">Завершити</string>
+    <string name="workout_complete_title">Чудова робота!</string>
+    <string name="workout_complete_msg">+%1$d балів. Регулярність важливіша за інтенсивність.</string>
+    <string name="workout_close">Закрити</string>
+    <string name="back">Назад</string>
+
+    <!-- Progress -->
+    <string name="progress_title">Прогрес</string>
+    <string name="progress_last7">Останні 7 днів</string>
+    <string name="progress_workouts">Тренувань</string>
+    <string name="progress_points">Балів</string>
+    <string name="progress_streak">Поточна серія</string>
+    <string name="progress_badges">Досягнення</string>
+    <string name="badge_first">Перше тренування</string>
+    <string name="badge_streak3">Серія 3 дні</string>
+    <string name="badge_streak7">Серія 7 днів</string>
+    <string name="badge_workouts10">10 тренувань</string>
+    <string name="badge_points500">500 балів</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_reminders">Нагадування</string>
+    <string name="settings_reminders_hint">Нагадування про рух і воду приходять щогодини з 09:00 до 19:00, про зуби — о 08:00 і 20:00.</string>
+    <string name="rem_move">Встати й порухатись</string>
+    <string name="rem_water">Випити води</string>
+    <string name="rem_teeth">Почистити зуби</string>
+    <string name="settings_redo">Пройти опитування знову</string>
+
+    <!-- Notifications -->
+    <string name="channel_name">Нагадування</string>
+    <string name="notif_move_title">Час порухатись</string>
+    <string name="notif_move_body">Ви вже давно сидите. Встаньте й розімніться хвилинку.</string>
+    <string name="notif_water_title">Вип\'ємо води</string>
+    <string name="notif_water_body">Склянка води підтримує енергію та концентрацію.</string>
+    <string name="notif_teeth_title">Почистіть зуби</string>
+    <string name="notif_teeth_body">Дві хвилини для здорової усмішки.</string>
+
+    <!-- Exercises -->
+    <string name="ex_neck_tilts">Нахили шиї вбік</string>
+    <string name="ex_neck_tilts_steps">1. Сядьте або встаньте рівно, плечі розслаблені.\n2. Повільно нахиліть праве вухо до правого плеча.\n3. Утримуйте 15 секунд, дихайте рівно, потім змініть бік.\nНе докладайте зусиль; зупиніться, якщо з\'явиться різкий біль або запаморочення.</string>
+    <string name="ex_shoulder_rolls">Кругові рухи плечима</string>
+    <string name="ex_shoulder_rolls_steps">1. Стійте або сидіть рівно, руки розслаблені.\n2. Підніміть плечі до вух, потім відведіть назад і вниз великим колом.\n3. Повторюйте повільно, посередині змініть напрямок.</string>
+    <string name="ex_chest_opener">Розтяжка грудей у дверях</string>
+    <string name="ex_chest_opener_steps">1. Станьте в дверному отворі, передпліччя на косяку на рівні плечей, лікті зігнуті на 90°.\n2. Зробіть крок однією ногою вперед до легкого розтягнення грудей.\n3. Ребра опущені, шия нейтральна. Утримуйте позу й дихайте.</string>
+    <string name="ex_cat_cow">Кішка-корова</string>
+    <string name="ex_cat_cow_steps">1. На четвереньках: зап\'ястки під плечима, коліна під стегнами.\n2. Вдих: опустіть живіт, підніміть груди й куприк (корова).\n3. Видих: округліть спину, підберіть підборіддя й куприк (кішка).\n4. Рухайтеся повільно в ритмі дихання.</string>
+    <string name="ex_hip_flexor">Розтяжка згиначів стегна</string>
+    <string name="ex_hip_flexor_steps">1. Станьте на одне коліно (підкладіть подушку), інша нога попереду.\n2. Злегка підберіть таз і зсуньтесь уперед до розтягнення спереду стегна задньої ноги.\n3. Утримуйте 20 секунд на кожен бік. Корпус рівний.</string>
+    <string name="ex_wall_pushups">Віджимання від стіни</string>
+    <string name="ex_wall_pushups_steps">1. Станьте на відстані витягнутої руки від стіни, долоні на стіні на рівні плечей.\n2. Зігніть лікті й наблизьте груди до стіни, тіло — єдина лінія.\n3. Поверніться у вихідне положення в контрольованому темпі.</string>
+    <string name="ex_pushups">Віджимання</string>
+    <string name="ex_pushups_steps">1. Поставте долоні трохи ширше плечей, тіло — єдина лінія (з колін — легший і цілком прийнятний варіант).\n2. Опустіть груди до підлоги, лікті під кутом близько 45° до тулуба.\n3. Поверніться вгору, не розгинаючи лікті до жорсткого упору. Видихайте під час підйому.</string>
+    <string name="ex_squats">Присідання зі стільцем</string>
+
+    <!-- Camera counting -->
+    <string name="camera_count">Рахувати повторення камерою</string>
+    <string name="camera_permission_needed">Для підрахунку повторень потрібен доступ до камери. Відео обробляється лише на пристрої: воно не зберігається і нікуди не надсилається.</string>
+    <string name="camera_grant">Дозволити камеру</string>
+    <string name="camera_tip">Поставте телефон приблизно за 2 м збоку від себе, щоб усе тіло було в кадрі.</string>
+    <string name="camera_body_not_visible">Тіло не повністю в кадрі</string>
+    <string name="camera_tracking">Відстежую</string>
+    <string name="camera_target">із %1$d</string>
+    <string name="camera_target_reached">Ціль досягнуто!</string>
+    <string name="camera_done">Готово</string>
+    <string name="ex_squats_steps">1. Станьте перед стільцем, ноги на ширині плечей.\n2. Відведіть таз назад і опускайтесь, доки легко не торкнетесь стільця; коліна йдуть над носками.\n3. Відштовхніться п\'ятами й підведіться.</string>
+    <string name="ex_glute_bridge">Сідничний місток</string>
+    <string name="ex_glute_bridge_steps">1. Ляжте на спину, коліна зігнуті, стопи на підлозі на ширині таза.\n2. Напружте сідниці й підніміть таз, щоб плечі, таз і коліна стали на одній лінії.\n3. Затримайтесь на 1 секунду й повільно опустіться.</string>
+    <string name="ex_plank">Планка на передпліччях</string>
+    <string name="ex_plank_steps">1. Обіпріться на передпліччя, лікті під плечима (можна з колін).\n2. Тримайте тіло однією лінією від голови до п\'ят.\n3. Напружте прес і дихайте рівно. Зупиніться, якщо поперек провисає або болить.</string>
+    <string name="ex_bird_dog">Пташка-собака</string>
+    <string name="ex_bird_dog_steps">1. На четвереньках, спина нейтральна.\n2. Витягніть праву руку й ліву ногу до рівня корпусу.\n3. Затримайтесь, поверніться, змініть бік. Таз не розвертайте.</string>
+    <string name="ex_calf_raises">Підйоми на носки</string>
+    <string name="ex_calf_raises_steps">1. Стійте, тримаючись за стіну або стілець.\n2. Підніміться на носки настільки, наскільки комфортно.\n3. Повільно опустіться. Добре для кровообігу після довгого сидіння.</string>
+    <string name="ex_brisk_walk">Швидка ходьба</string>
+    <string name="ex_brisk_walk_steps">1. Ідіть у темпі, коли можна розмовляти, але не співати.\n2. Голова піднята, плечі розслаблені, руки природно рухаються.\n3. Дихайте рівно протягом усієї прогулянки.</string>
+    <string name="ex_march">Марш на місці</string>
+    <string name="ex_march_steps">1. Стійте рівно й по черзі піднімайте коліна до рівня стегон.\n2. Руки рухаються протилежно ногам.\n3. Тримайте рівний ритм і дихайте природно.</string>
+    <string name="ex_eye_rest">Відпочинок для очей 20-20-20</string>
+    <string name="ex_eye_rest_steps">1. Відведіть погляд від екрана на об\'єкт приблизно за 6 м.\n2. Дивіться 20 секунд і повільно кліпайте.\n3. Повторюйте кожні 20 хвилин роботи за екраном.</string>
+</resources>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Sport Assistant</string>
+
+    <string name="tab_today">Today</string>
+    <string name="tab_walk">Walk</string>
+    <string name="tab_library">Exercises</string>
+
+    <!-- Walk -->
+    <string name="walk_start">Start walk</string>
+    <string name="walk_finish">Finish walk</string>
+    <string name="walk_distance">Distance</string>
+    <string name="walk_time">Time</string>
+    <string name="walk_pace">Pace</string>
+    <string name="walk_pace_unit">min/km</string>
+    <string name="walk_kcal">kcal</string>
+    <string name="walk_km">%1$.2f km</string>
+    <string name="walk_waiting">Searching for GPS signal… Step outside for a faster fix.</string>
+    <string name="walk_permission_hint">Your route is recorded with GPS and stays on this device. Location is used only while a walk is in progress.</string>
+    <string name="walk_gps_off">Location (GPS) is turned off. Enable it in system settings and try again.</string>
+    <string name="walk_too_short">The walk was too short to save (under 100 m).</string>
+    <string name="walk_history">Previous walks</string>
+    <string name="walk_channel_name">Walk tracking</string>
+    <string name="walk_notif_title">Walk in progress</string>
+    <string name="walk_notif_text">Recording your route</string>
+
+    <!-- About / updates -->
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_uptodate">You have the latest version.</string>
+    <string name="update_available">Version %1$s is available.</string>
+    <string name="update_install">Download and install</string>
+    <string name="update_downloading">Downloading…</string>
+    <string name="update_not_configured">The update source is not configured in this build.</string>
+    <string name="update_error">Could not check for updates. Try again later.</string>
+    <string name="update_hash_mismatch">The downloaded file failed verification and was discarded.</string>
+    <string name="update_allow_install">Allow installing from this app in the settings that just opened, then come back and tap the button again.</string>
+    <string name="tab_progress">Progress</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Onboarding -->
+    <string name="onb_title">Let\'s get to know you</string>
+    <string name="onb_subtitle">A few questions to build a gentle daily plan for a desk-based lifestyle.</string>
+    <string name="onb_age">Age</string>
+    <string name="onb_height">Height, cm</string>
+    <string name="onb_weight">Weight, kg</string>
+    <string name="onb_sitting">Hours sitting per day: %1$d</string>
+    <string name="onb_activity">Current activity level</string>
+    <string name="activity_low">Low</string>
+    <string name="activity_medium">Medium</string>
+    <string name="activity_high">High</string>
+    <string name="onb_complaints">Anything bothering you?</string>
+    <string name="onb_start">Start</string>
+    <string name="disclaimer_medical">This app supports a healthy lifestyle and is not a medical device. It does not diagnose or treat. If you feel pain, dizziness or have a chronic condition, consult a doctor first.</string>
+
+    <string name="complaint_neck">Neck</string>
+    <string name="complaint_back">Back</string>
+    <string name="complaint_shoulders">Shoulders</string>
+    <string name="complaint_eyes">Eyes</string>
+    <string name="complaint_legs">Legs</string>
+
+    <!-- Today -->
+    <string name="today_title">Today\'s plan</string>
+    <string name="today_start">Start workout</string>
+    <string name="today_streak">Streak: %1$d d</string>
+    <string name="today_points">Points: %1$d</string>
+    <string name="today_minutes">~%1$d min</string>
+
+    <!-- Categories -->
+    <string name="cat_mobility">Mobility</string>
+    <string name="cat_stretch">Stretching</string>
+    <string name="cat_strength">Strength</string>
+    <string name="cat_core">Core</string>
+    <string name="cat_cardio">Cardio</string>
+    <string name="cat_eyes">Eyes</string>
+
+    <!-- Workout -->
+    <string name="workout_step">Exercise %1$d of %2$d</string>
+    <string name="workout_seconds">%1$d s</string>
+    <string name="workout_reps">%1$d reps</string>
+    <string name="workout_minutes">%1$d min</string>
+    <string name="workout_next">Next</string>
+    <string name="workout_finish">Finish</string>
+    <string name="workout_complete_title">Well done!</string>
+    <string name="workout_complete_msg">+%1$d points. Consistency matters more than intensity.</string>
+    <string name="workout_close">Close</string>
+    <string name="back">Back</string>
+
+    <!-- Progress -->
+    <string name="progress_title">Progress</string>
+    <string name="progress_last7">Last 7 days</string>
+    <string name="progress_workouts">Workouts</string>
+    <string name="progress_points">Points</string>
+    <string name="progress_streak">Current streak</string>
+    <string name="progress_badges">Achievements</string>
+    <string name="badge_first">First workout</string>
+    <string name="badge_streak3">3-day streak</string>
+    <string name="badge_streak7">7-day streak</string>
+    <string name="badge_workouts10">10 workouts</string>
+    <string name="badge_points500">500 points</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_reminders">Reminders</string>
+    <string name="settings_reminders_hint">Move and water reminders arrive hourly between 09:00 and 19:00; teeth at 08:00 and 20:00.</string>
+    <string name="rem_move">Stand up and move</string>
+    <string name="rem_water">Drink water</string>
+    <string name="rem_teeth">Brush teeth</string>
+    <string name="settings_redo">Redo questionnaire</string>
+
+    <!-- Notifications -->
+    <string name="channel_name">Reminders</string>
+    <string name="notif_move_title">Time to move</string>
+    <string name="notif_move_body">You have been sitting a while. Stand up and stretch for a minute.</string>
+    <string name="notif_water_title">Drink some water</string>
+    <string name="notif_water_body">A glass of water keeps energy and focus up.</string>
+    <string name="notif_teeth_title">Brush your teeth</string>
+    <string name="notif_teeth_body">Two minutes for a healthy smile.</string>
+
+    <!-- Exercises -->
+    <string name="ex_neck_tilts">Neck side tilts</string>
+    <string name="ex_neck_tilts_steps">1. Sit or stand tall, shoulders relaxed.\n2. Slowly tilt your right ear toward your right shoulder.\n3. Hold 15 seconds, breathe evenly, then switch sides.\nDo not force the movement; stop if you feel sharp pain or dizziness.</string>
+    <string name="ex_shoulder_rolls">Shoulder rolls</string>
+    <string name="ex_shoulder_rolls_steps">1. Stand or sit tall with arms relaxed.\n2. Lift the shoulders toward the ears, then roll them back and down in a big circle.\n3. Repeat slowly, reversing direction halfway.</string>
+    <string name="ex_chest_opener">Doorway chest stretch</string>
+    <string name="ex_chest_opener_steps">1. Stand in a doorway, forearms on the frame at shoulder height, elbows bent 90°.\n2. Step one foot forward until you feel a gentle stretch across the chest.\n3. Keep ribs down and neck neutral. Hold and breathe.</string>
+    <string name="ex_cat_cow">Cat–cow</string>
+    <string name="ex_cat_cow_steps">1. On hands and knees: wrists under shoulders, knees under hips.\n2. Inhale: lower the belly, lift chest and tailbone (cow).\n3. Exhale: round the back, tuck chin and tailbone (cat).\n4. Move slowly with your breath.</string>
+    <string name="ex_hip_flexor">Hip flexor stretch</string>
+    <string name="ex_hip_flexor_steps">1. Kneel on one knee (use a cushion), other foot forward.\n2. Tuck the pelvis slightly and shift forward until you feel a stretch at the front of the back-leg hip.\n3. Hold 20 seconds per side. Keep the torso upright.</string>
+    <string name="ex_wall_pushups">Wall push-ups</string>
+    <string name="ex_wall_pushups_steps">1. Stand an arm\'s length from a wall, palms on the wall at shoulder height.\n2. Bend the elbows and bring your chest toward the wall, body in a straight line.\n3. Push back to the start with a controlled tempo.</string>
+    <string name="ex_pushups">Push-ups</string>
+    <string name="ex_pushups_steps">1. Place hands slightly wider than shoulders, body in a straight line (knees down is a fine, easier version).\n2. Lower the chest toward the floor, elbows about 45° from the body.\n3. Push back up without locking the elbows hard. Breathe out on the way up.</string>
+    <string name="ex_squats">Chair squats</string>
+
+    <!-- Camera counting -->
+    <string name="camera_count">Count reps with camera</string>
+    <string name="camera_permission_needed">Camera access is needed to count your reps. Video is processed on your device only: it is never saved or sent anywhere.</string>
+    <string name="camera_grant">Allow camera</string>
+    <string name="camera_tip">Place the phone about 2 m away, to your side, so your whole body is in the frame.</string>
+    <string name="camera_body_not_visible">Body not fully visible</string>
+    <string name="camera_tracking">Tracking</string>
+    <string name="camera_target">of %1$d</string>
+    <string name="camera_target_reached">Target reached!</string>
+    <string name="camera_done">Done</string>
+    <string name="ex_squats_steps">1. Stand with feet shoulder-width apart in front of a chair.\n2. Push the hips back and lower until you lightly touch the chair, knees tracking over toes.\n3. Press through your heels to stand up.</string>
+    <string name="ex_glute_bridge">Glute bridge</string>
+    <string name="ex_glute_bridge_steps">1. Lie on your back, knees bent, feet flat and hip-width apart.\n2. Squeeze the glutes and lift the hips until shoulders, hips and knees form a line.\n3. Pause for 1 second, then lower slowly.</string>
+    <string name="ex_plank">Forearm plank</string>
+    <string name="ex_plank_steps">1. Place forearms on the floor, elbows under shoulders (knees down is fine).\n2. Keep the body in a straight line from head to heels.\n3. Brace the abs and breathe steadily. Stop if your lower back sags or hurts.</string>
+    <string name="ex_bird_dog">Bird-dog</string>
+    <string name="ex_bird_dog_steps">1. On hands and knees, back neutral.\n2. Extend the right arm and left leg until level with the torso.\n3. Pause, return, switch sides. Do not rotate the hips.</string>
+    <string name="ex_calf_raises">Calf raises</string>
+    <string name="ex_calf_raises_steps">1. Stand holding a wall or chair for balance.\n2. Rise onto your toes as high as is comfortable.\n3. Lower slowly. Great for circulation after long sitting.</string>
+    <string name="ex_brisk_walk">Brisk walk</string>
+    <string name="ex_brisk_walk_steps">1. Walk at a pace where you can talk but not sing.\n2. Keep your head up, shoulders relaxed, arms swinging naturally.\n3. Aim for steady breathing throughout.</string>
+    <string name="ex_march">Marching in place</string>
+    <string name="ex_march_steps">1. Stand tall and lift the knees alternately to hip height.\n2. Swing the arms in opposition.\n3. Keep a steady rhythm and breathe naturally.</string>
+    <string name="ex_eye_rest">20-20-20 eye rest</string>
+    <string name="ex_eye_rest_steps">1. Look away from the screen at something about 6 m (20 ft) away.\n2. Hold your gaze for 20 seconds and blink slowly.\n3. Repeat every 20 minutes of screen work.</string>
+</resources>
