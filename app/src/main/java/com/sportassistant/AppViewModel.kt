@@ -4,7 +4,20 @@ import android.app.Application
 import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import android.net.Uri
+import com.sportassistant.ai.AnalysisError
+import com.sportassistant.ai.AnalysisResult
+import com.sportassistant.ai.FoodAnalyzer
+import com.sportassistant.ai.FoodItem
 import com.sportassistant.data.AppDatabase
+import com.sportassistant.data.FoodEntry
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import java.util.Locale
 import com.sportassistant.data.Profile
 import com.sportassistant.data.ProfileStore
 import com.sportassistant.data.Stats
@@ -48,6 +61,14 @@ sealed interface UpdateState {
     data object Error : UpdateState
 }
 
+sealed interface FoodAnalysisState {
+    data object Idle : FoodAnalysisState
+    data object Analyzing : FoodAnalysisState
+    data class Review(val items: List<FoodItem>) : FoodAnalysisState
+    data object NoFood : FoodAnalysisState
+    data class Failed(val error: AnalysisError) : FoodAnalysisState
+}
+
 class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val store = ProfileStore(app)
     private val db = AppDatabase.get(app)
@@ -66,6 +87,61 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         walkDao.observeRecent().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     val track: StateFlow<TrackState> = TrackRecorder.state
+
+    private val foodDao = db.foodDao()
+
+    /** Re-subscribes at midnight: the day key is re-evaluated every minute. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val foodToday: StateFlow<List<FoodEntry>> = flow {
+        while (true) {
+            emit(LocalDate.now().toEpochDay())
+            delay(60_000)
+        }
+    }.distinctUntilChanged().flatMapLatest { foodDao.observeDay(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _analysis = MutableStateFlow<FoodAnalysisState>(FoodAnalysisState.Idle)
+    val analysis: StateFlow<FoodAnalysisState> = _analysis.asStateFlow()
+
+    fun analyzeFood(photo: Uri) {
+        val p = profile.value ?: return
+        _analysis.value = FoodAnalysisState.Analyzing
+        viewModelScope.launch {
+            val ctx = getApplication<Application>()
+            _analysis.value = try {
+                val jpeg = FoodAnalyzer.prepareJpeg(ctx, photo)
+                val lang = if (Locale.getDefault().language == "uk") "uk" else "en"
+                when (val r = FoodAnalyzer.analyze(p.geminiKey, jpeg, lang)) {
+                    is AnalysisResult.Success -> FoodAnalysisState.Review(r.items)
+                    AnalysisResult.NoFood -> FoodAnalysisState.NoFood
+                    is AnalysisResult.Failure -> FoodAnalysisState.Failed(r.error)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) { // unreadable image, out of memory while decoding, ...
+                FoodAnalysisState.Failed(AnalysisError.BAD_RESPONSE)
+            }
+        }
+    }
+
+    fun dismissAnalysis() {
+        _analysis.value = FoodAnalysisState.Idle
+    }
+
+    fun saveFood(items: List<FoodItem>) {
+        val now = System.currentTimeMillis()
+        val day = LocalDate.now().toEpochDay()
+        viewModelScope.launch {
+            foodDao.insertAll(
+                items.map { FoodEntry(epochDay = day, loggedAt = now, name = it.name, grams = it.grams, kcal = it.kcal, proteinG = it.proteinG, fatG = it.fatG, carbsG = it.carbsG) },
+            )
+        }
+        _analysis.value = FoodAnalysisState.Idle
+    }
+
+    fun deleteFood(id: Long) {
+        viewModelScope.launch { foodDao.delete(id) }
+    }
 
     private val healthRepo = HealthRepository(app)
     val healthPermissions: Set<String> = healthRepo.permissions

@@ -16,6 +16,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,6 +77,7 @@ fun TodayScreen(
     onRefresh: () -> Unit,
     onStart: () -> Unit,
     onOpen: (Exercise) -> Unit,
+    onLibrary: () -> Unit,
 ) {
     val minutes = (plan.sumOf { it.estimatedSeconds } / 60).coerceAtLeast(1)
     LazyColumn(Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -86,6 +89,7 @@ fun TodayScreen(
         item { HealthCard(health, onConnect, onRefresh) }
         items(plan, key = { it.id }) { ex -> ExerciseRow(ex) { onOpen(ex) } }
         item { Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.today_start)) } }
+        item { OutlinedButton(onClick = onLibrary, modifier = Modifier.fillMaxWidth()) { Text("📚  ${stringResource(R.string.tab_library)}") } }
         item { Text(stringResource(R.string.disclaimer_medical), style = MaterialTheme.typography.bodySmall) }
     }
 }
@@ -241,6 +245,20 @@ fun SettingsScreen(
         SwitchRow(R.string.rem_teeth, profile.remTeeth) { onChange(profile.copy(remTeeth = it)) }
         Text(stringResource(R.string.settings_reminders_hint), style = MaterialTheme.typography.bodySmall)
         OutlinedButton(onClick = onRedo, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_redo)) }
+
+        Text(stringResource(R.string.settings_ai), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_ai_hint), style = MaterialTheme.typography.bodySmall)
+        var key by rememberSaveable(profile.geminiKey) { mutableStateOf(profile.geminiKey) }
+        OutlinedTextField(
+            key, { key = it.trim() }, Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.settings_ai_key)) }, singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+        )
+        Button(
+            onClick = { onChange(profile.copy(geminiKey = key)) },
+            enabled = key != profile.geminiKey,
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text(stringResource(R.string.settings_save)) }
 
         Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))

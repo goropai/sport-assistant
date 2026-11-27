@@ -51,6 +51,42 @@ interface WalkDao {
     fun observeRecent(): Flow<List<Walk>>
 }
 
+@Entity(tableName = "food_entry")
+data class FoodEntry(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val epochDay: Long,
+    val loggedAt: Long,
+    val name: String,
+    val grams: Int,
+    val kcal: Int,
+    val proteinG: Int,
+    val fatG: Int,
+    val carbsG: Int,
+)
+
+@Dao
+interface FoodDao {
+    @Insert
+    suspend fun insertAll(entries: List<FoodEntry>)
+
+    @Query("DELETE FROM food_entry WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("SELECT * FROM food_entry WHERE epochDay = :day ORDER BY loggedAt DESC")
+    fun observeDay(day: Long): Flow<List<FoodEntry>>
+}
+
+private val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `food_entry` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`epochDay` INTEGER NOT NULL, `loggedAt` INTEGER NOT NULL, `name` TEXT NOT NULL, " +
+                "`grams` INTEGER NOT NULL, `kcal` INTEGER NOT NULL, `proteinG` INTEGER NOT NULL, " +
+                "`fatG` INTEGER NOT NULL, `carbsG` INTEGER NOT NULL)",
+        )
+    }
+}
+
 private val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -61,17 +97,18 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
-@Database(entities = [WorkoutLog::class, Walk::class], version = 2, exportSchema = false)
+@Database(entities = [WorkoutLog::class, Walk::class, FoodEntry::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun logDao(): WorkoutLogDao
     abstract fun walkDao(): WalkDao
+    abstract fun foodDao(): FoodDao
 
     companion object {
         @Volatile private var instance: AppDatabase? = null
 
         fun get(context: Context): AppDatabase = instance ?: synchronized(this) {
             instance ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "app.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
                 .also { instance = it }
         }

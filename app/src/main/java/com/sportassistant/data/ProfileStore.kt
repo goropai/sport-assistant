@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,9 @@ data class Profile(
     val remMove: Boolean = true,
     val remWater: Boolean = true,
     val remTeeth: Boolean = true,
+    val sex: Sex = Sex.UNSPECIFIED,
+    /** The user's own Gemini API key; empty disables photo analysis. Stored in the app-private DataStore. */
+    val geminiKey: String = "",
 )
 
 private val Context.dataStore by preferencesDataStore("profile")
@@ -38,6 +42,8 @@ class ProfileStore(private val context: Context) {
         val remMove = booleanPreferencesKey("rem_move")
         val remWater = booleanPreferencesKey("rem_water")
         val remTeeth = booleanPreferencesKey("rem_teeth")
+        val sex = stringPreferencesKey("sex")
+        val geminiKey = stringPreferencesKey("gemini_key")
     }
 
     val profile: Flow<Profile> = context.dataStore.data.map { it.toProfile() }
@@ -54,6 +60,8 @@ class ProfileStore(private val context: Context) {
             it[K.remMove] = p.remMove
             it[K.remWater] = p.remWater
             it[K.remTeeth] = p.remTeeth
+            it[K.sex] = p.sex.name
+            it[K.geminiKey] = p.geminiKey
         }
     }
 
@@ -72,6 +80,8 @@ class ProfileStore(private val context: Context) {
             remMove = this[K.remMove] ?: d.remMove,
             remWater = this[K.remWater] ?: d.remWater,
             remTeeth = this[K.remTeeth] ?: d.remTeeth,
+            sex = Sex.entries.firstOrNull { it.name == this[K.sex] } ?: d.sex,
+            geminiKey = this[K.geminiKey] ?: d.geminiKey,
         )
     }
 }

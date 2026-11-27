@@ -24,6 +24,49 @@
     <string name="walk_notif_title">Walk in progress</string>
     <string name="walk_notif_text">Recording your route</string>
 
+    <!-- Food -->
+    <string name="tab_food">Food</string>
+    <string name="food_title">Food diary</string>
+    <string name="food_eaten">Eaten</string>
+    <string name="food_spent">Spent</string>
+    <string name="food_net">Net</string>
+    <string name="food_kcal_fmt">%1$d kcal</string>
+    <string name="food_kcal_label">kcal</string>
+    <string name="food_grams_fmt">%1$d g</string>
+    <string name="food_spent_breakdown">resting %1$d + active %2$d</string>
+    <string name="food_source_watch">active from your watch</string>
+    <string name="food_source_walks">active from tracked walks</string>
+    <string name="food_macros">Protein %1$d g · Fat %2$d g · Carbs %3$d g</string>
+    <string name="food_photo">📷 Photo</string>
+    <string name="food_gallery">🖼 Gallery</string>
+    <string name="food_manual">✍ Manual</string>
+    <string name="food_analyzing">Analyzing the photo…</string>
+    <string name="food_review_title">Check the estimate</string>
+    <string name="food_review_hint">Estimates are approximate (±20–30%). Fix names and portion weights before saving.</string>
+    <string name="food_name">Name</string>
+    <string name="food_grams">Grams</string>
+    <string name="food_save">Save</string>
+    <string name="food_cancel">Cancel</string>
+    <string name="food_add">Add</string>
+    <string name="food_today_entries">Today</string>
+    <string name="food_empty">Nothing logged yet today.</string>
+    <string name="food_disclaimer">Calories are estimates, not medical advice. Photos are sent for analysis and are not stored.</string>
+    <string name="food_no_food">No food found in the photo. Try a closer, brighter shot or add it manually.</string>
+    <string name="food_err_auth">Gemini rejected the API key. Check it in Settings.</string>
+    <string name="food_err_rate">Too many requests. Wait a minute and try again.</string>
+    <string name="food_err_unavailable">The AI service is unavailable right now. Try again later or add food manually.</string>
+    <string name="food_err_network">No connection. Check your internet and try again.</string>
+    <string name="food_err_bad">Could not understand the answer. Try another photo.</string>
+    <string name="food_not_configured">Photo analysis needs your Gemini API key (Settings). You can add food manually meanwhile.</string>
+    <string name="settings_ai">AI food analysis</string>
+    <string name="settings_ai_hint">Enter your own Gemini API key (free to create in Google AI Studio). Photos are sent directly to Google for analysis; the key is stored only on this phone.</string>
+    <string name="settings_ai_key">Gemini API key</string>
+    <string name="settings_save">Save</string>
+    <string name="onb_sex">Sex (used for calorie estimates)</string>
+    <string name="sex_male">Male</string>
+    <string name="sex_female">Female</string>
+    <string name="sex_unspecified">Prefer not to say</string>
+
     <!-- Watch / Health Connect -->
     <string name="health_title">From your watch</string>
     <string name="health_loading">Loading…</string>

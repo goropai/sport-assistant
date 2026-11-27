@@ -36,7 +36,7 @@ private data class Tab(val route: String, val label: Int, val emoji: String)
 private val tabs = listOf(
     Tab("today", R.string.tab_today, "🏠"),
     Tab("walk", R.string.tab_walk, "🚶"),
-    Tab("library", R.string.tab_library, "📚"),
+    Tab("food", R.string.tab_food, "🍽️"),
     Tab("progress", R.string.tab_progress, "📈"),
     Tab("settings", R.string.tab_settings, "⚙️"),
 )
@@ -93,6 +93,26 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                     onRefresh = vm::refreshHealth,
                     onStart = { nav.navigate("workout") },
                     onOpen = { nav.navigate("exercise/${it.id}") },
+                    onLibrary = { nav.navigate("library") },
+                )
+            }
+            composable("food") {
+                val entries by vm.foodToday.collectAsState()
+                val health by vm.health.collectAsState()
+                val walks by vm.walks.collectAsState()
+                val analysis by vm.analysis.collectAsState()
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshHealth() }
+                val today = LocalDate.now().toEpochDay()
+                FoodScreen(
+                    profile,
+                    entries,
+                    health,
+                    walkKcalToday = walks.filter { it.epochDay == today }.sumOf { it.kcal },
+                    analysis = analysis,
+                    onPhoto = vm::analyzeFood,
+                    onSave = vm::saveFood,
+                    onDismiss = vm::dismissAnalysis,
+                    onDelete = vm::deleteFood,
                 )
             }
             composable("walk") {

@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.sportassistant.R
 import com.sportassistant.data.Complaint
 import com.sportassistant.data.Profile
+import com.sportassistant.data.Sex
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -46,6 +47,7 @@ fun OnboardingScreen(initial: Profile, onDone: (Profile) -> Unit) {
     var sit by rememberSaveable { mutableFloatStateOf(initial.sitHours.toFloat()) }
     var activity by rememberSaveable { mutableIntStateOf(initial.activity) }
     var complaints by rememberSaveable { mutableStateOf(initial.complaints.map { it.name }.toSet()) }
+    var sex by rememberSaveable { mutableStateOf(initial.sex.name) }
 
     fun build() = initial.copy(
         age = age.toIntOrNull()?.coerceIn(10, 100) ?: initial.age,
@@ -54,6 +56,7 @@ fun OnboardingScreen(initial: Profile, onDone: (Profile) -> Unit) {
         sitHours = sit.toInt(),
         activity = activity,
         complaints = Complaint.entries.filter { it.name in complaints }.toSet(),
+        sex = Sex.entries.firstOrNull { it.name == sex } ?: Sex.UNSPECIFIED,
     )
 
     // The permission result is irrelevant to saving: reminders simply stay silent if denied.
@@ -71,6 +74,11 @@ fun OnboardingScreen(initial: Profile, onDone: (Profile) -> Unit) {
             OutlinedTextField(age, { age = it.filter(Char::isDigit).take(3) }, Modifier.weight(1f), label = { Text(stringResource(R.string.onb_age)) }, singleLine = true, keyboardOptions = numeric)
             OutlinedTextField(height, { height = it.filter(Char::isDigit).take(3) }, Modifier.weight(1f), label = { Text(stringResource(R.string.onb_height)) }, singleLine = true, keyboardOptions = numeric)
             OutlinedTextField(weight, { weight = it.filter(Char::isDigit).take(3) }, Modifier.weight(1f), label = { Text(stringResource(R.string.onb_weight)) }, singleLine = true, keyboardOptions = numeric)
+        }
+
+        Text(stringResource(R.string.onb_sex))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Sex.entries.forEach { s -> FilterChip(sex == s.name, { sex = s.name }, label = { Text(stringResource(s.label)) }) }
         }
 
         Text(stringResource(R.string.onb_sitting, sit.toInt()))

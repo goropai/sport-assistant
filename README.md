@@ -21,8 +21,9 @@ rate, sleep, active calories and distance. Shown on the Today screen.
 
 Toolchain: AGP 9.5, Gradle 9.9, Kotlin 2.4, compileSdk 37.1.
 
-Not yet: food photo log,
-photo-based observations, exercise illustrations (emoji placeholders for now).
+Food diary with photo analysis and calorie balance (see below).
+
+Not yet: photo-based observations (posture/skin), exercise illustrations (emoji placeholders for now).
 
 ## Updates
 
@@ -44,15 +45,12 @@ Enable Developer options, then USB debugging (on Xiaomi also "Install via USB" a
 "File transfer"), accept the RSA prompt on the phone, check `adb devices`, then:
 `adb install -r app\build\outputs\apk\debug\app-debug.apk`.
 
-## AI proxy (`proxy/`)
+## Food photo analysis
 
-Keeps provider keys off the device. Not used by the app yet; it is ready for the food-photo stage.
-
-```
-cd proxy
-$env:APP_TOKEN="..."; $env:GEMINI_API_KEY="..."; node server.mjs
-```
-
-`POST /v1/analyze` with header `x-app-token`, body
-`{"task":"food|posture|skin","image":"<base64>","mimeType":"image/jpeg","lang":"uk","provider":"gemini|claude"}`.
-Gemini is the default; if it fails and a Claude key is set, the proxy falls back to Claude.
+Settings → "AI food analysis": paste your own Gemini API key (create one in Google AI Studio). The
+app sends a downscaled photo straight to the Gemini API (`gemini-3.8-flash`, see `GeminiApi.MODEL`)
+and asks for a JSON list of foods with portion weight, kcal and macros. You review and correct the
+estimate before it is saved; photos are never stored. The key lives only in the app's private
+storage on the phone and is never part of the APK or the repository. Without a key, food can still be
+added manually. The calorie balance is resting energy (Mifflin-St Jeor) + active energy from the
+watch (or tracked walks) versus eaten calories.

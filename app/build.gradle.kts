@@ -16,8 +16,8 @@ android {
         applicationId = "com.sportassistant"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "0.3.0"
+        versionCode = 6
+        versionName = "0.4.0"
 
         // HTTPS URL of a version.json (see README, "Updates"). Empty disables the update check.
         // Set in gradle.properties or with -PupdateUrl=...
@@ -73,6 +73,8 @@ dependencies {
     implementation("com.google.mlkit:pose-detection:18.0.0-beta5")
 
     testImplementation("junit:junit:4.13.2")
+    // android.jar's org.json is a stub on the JVM; the real implementation is needed for parser tests.
+    testImplementation("org.json:json:20250517")
 
     val room = "2.8.5"
     implementation("androidx.room:room-runtime:$room")
