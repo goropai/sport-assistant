@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -185,7 +187,20 @@ fun FoodScreen(
 
     // The entry may have been deleted while the dialog was open; then there is nothing to edit.
     entries.firstOrNull { it.id == editingId }?.let { entry ->
-        EditFoodDialog(entry, onSave = { onUpdate(it); editingId = null }, onDismiss = { editingId = null })
+        EditFoodDialog(
+            entry = entry,
+            frequent = frequent,
+            aiConfigured = aiConfigured,
+            estimate = estimate,
+            onEstimate = onEstimate,
+            onEstimateHandled = onEstimateHandled,
+            onSave = { updated, extra ->
+                onUpdate(updated)
+                if (extra.isNotEmpty()) onSave(extra, Meal.of(updated.meal))
+                editingId = null
+            },
+            onDismiss = { editingId = null },
+        )
     }
 }
 
@@ -217,14 +232,27 @@ fun MealDropdown(selected: Meal, onSelect: (Meal) -> Unit, modifier: Modifier = 
     }
 }
 
-/** Edit a saved entry. Calories follow the weight until the user types their own number. */
+/**
+ * Edit a saved entry. Calories follow the weight until the user types their own number. More foods can be
+ * added to the same meal with "+": they are saved together with the edited entry.
+ */
 @Composable
-private fun EditFoodDialog(entry: FoodEntry, onSave: (FoodEntry) -> Unit, onDismiss: () -> Unit) {
+private fun EditFoodDialog(
+    entry: FoodEntry,
+    frequent: List<FoodEntry>,
+    aiConfigured: Boolean,
+    estimate: EstimateState,
+    onEstimate: (String) -> Unit,
+    onEstimateHandled: () -> Unit,
+    onSave: (updated: FoodEntry, extra: List<FoodItem>) -> Unit,
+    onDismiss: () -> Unit,
+) {
     var name by rememberSaveable(entry.id) { mutableStateOf(entry.name) }
     var grams by rememberSaveable(entry.id) { mutableStateOf(if (entry.grams > 0) entry.grams.toString() else "") }
     var kcal by rememberSaveable(entry.id) { mutableStateOf(entry.kcal.toString()) }
     var kcalEdited by rememberSaveable(entry.id) { mutableStateOf(false) }
     var meal by rememberSaveable(entry.id) { mutableStateOf(entry.meal) }
+    val extraRows = rememberSaveable(entry.id, saver = RowsSaver) { mutableStateListOf<ManualRow>() }
     val numeric = KeyboardOptions(keyboardType = KeyboardType.Number)
     val canSave = name.isNotBlank() && kcal.toIntOrNull() != null
 
@@ -232,8 +260,12 @@ private fun EditFoodDialog(entry: FoodEntry, onSave: (FoodEntry) -> Unit, onDism
         onDismissRequest = onDismiss,
         title = { Text(stringResource(R.string.food_edit_title)) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            // The dialog grows with every added food, so it scrolls.
+            Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 MealDropdown(Meal.of(meal), { meal = it.name })
+                if (extraRows.isNotEmpty()) {
+                    Text(stringResource(R.string.food_product_n, 1), style = MaterialTheme.typography.titleSmall)
+                }
                 OutlinedTextField(name, { name = it.take(80) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.food_name)) }, singleLine = true)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
@@ -255,6 +287,18 @@ private fun EditFoodDialog(entry: FoodEntry, onSave: (FoodEntry) -> Unit, onDism
                 if (entry.grams > 0 && !kcalEdited) {
                     Text(stringResource(R.string.food_kcal_auto), style = MaterialTheme.typography.bodySmall)
                 }
+
+                RowsEditor(
+                    rows = extraRows,
+                    firstNumber = 2,
+                    minRows = 0,
+                    dividerBeforeFirst = true,
+                    frequent = frequent,
+                    aiConfigured = aiConfigured,
+                    estimate = estimate,
+                    onEstimate = onEstimate,
+                    onEstimateHandled = onEstimateHandled,
+                )
             }
         },
         confirmButton = {
@@ -262,7 +306,8 @@ private fun EditFoodDialog(entry: FoodEntry, onSave: (FoodEntry) -> Unit, onDism
                 enabled = canSave,
                 onClick = {
                     val scaled = FoodHistory.withGrams(entry, grams.toIntOrNull() ?: 0)
-                    onSave(scaled.copy(name = name.trim(), kcal = kcal.toIntOrNull() ?: scaled.kcal, meal = meal))
+                    val updated = scaled.copy(name = name.trim(), kcal = kcal.toIntOrNull() ?: scaled.kcal, meal = meal)
+                    onSave(updated, ManualRows.items(extraRows))
                 },
             ) { Text(stringResource(R.string.food_save)) }
         },
@@ -396,15 +441,64 @@ private fun ManualCard(
     onAdd: (List<FoodItem>, Meal) -> Unit,
 ) {
     val rows = rememberSaveable(saver = RowsSaver) { mutableStateListOf(ManualRow(id = 1L)) }
-    var nextId by rememberSaveable { mutableLongStateOf(2L) }
     var mealChoice by rememberSaveable { mutableStateOf<String?>(null) }
-    var estimatingId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     // Until the user picks one, the meal follows the time of day and what is already in the diary.
     val meal = mealChoice?.let(Meal::of) ?: MealPicker.defaultFor(LocalTime.now(), loggedMeals)
     val validCount = ManualRows.validCount(rows)
 
-    // An AI lookup answers for the row that asked, found by id because rows may have been removed meanwhile.
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            MealDropdown(meal, { mealChoice = it.name })
+
+            RowsEditor(
+                rows = rows,
+                firstNumber = 1,
+                minRows = 1,
+                dividerBeforeFirst = false,
+                frequent = frequent,
+                aiConfigured = aiConfigured,
+                estimate = estimate,
+                onEstimate = onEstimate,
+                onEstimateHandled = onEstimateHandled,
+            )
+
+            Button(
+                onClick = {
+                    onAdd(ManualRows.items(rows), meal)
+                    rows.clear()
+                    // A fresh, unique id: a lookup still in flight for an old section must not land in the new one.
+                    rows += ManualRow(id = System.currentTimeMillis())
+                    mealChoice = null
+                },
+                enabled = validCount > 0,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(stringResource(R.string.food_add_n, validCount)) }
+        }
+    }
+}
+
+/**
+ * The food sections plus their "add another food" button, shared by the add form and the edit dialog. The
+ * caller owns [rows]; this keeps the id counter and the pending AI lookup. [minRows] is how many sections
+ * cannot be removed (1 for the add form, 0 for the dialog, where the edited entry is the first food).
+ */
+@Composable
+private fun RowsEditor(
+    rows: SnapshotStateList<ManualRow>,
+    firstNumber: Int,
+    minRows: Int,
+    dividerBeforeFirst: Boolean,
+    frequent: List<FoodEntry>,
+    aiConfigured: Boolean,
+    estimate: EstimateState,
+    onEstimate: (String) -> Unit,
+    onEstimateHandled: () -> Unit,
+) {
+    var nextId by rememberSaveable { mutableLongStateOf((rows.maxOfOrNull { it.id } ?: 0L) + 1L) }
+    var estimatingId by rememberSaveable { mutableStateOf<Long?>(null) }
+
+    // An AI lookup answers for the section that asked, found by id because sections may be removed meanwhile.
     LaunchedEffect(estimate) {
         if (estimate is EstimateState.Done) {
             val i = rows.indexOfFirst { it.id == estimatingId }
@@ -417,59 +511,42 @@ private fun ManualCard(
         }
     }
 
-    Card(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            MealDropdown(meal, { mealChoice = it.name })
-
-            rows.forEachIndexed { index, row ->
-                if (index > 0) HorizontalDivider()
-                ManualRowSection(
-                    row = row,
-                    number = index + 1,
-                    canRemove = rows.size > 1,
-                    frequent = frequent,
-                    aiConfigured = aiConfigured,
-                    estimate = estimate,
-                    estimatingThis = estimatingId == row.id,
-                    onChange = { rows[index] = it },
-                    onRemove = {
-                        if (estimatingId == row.id) estimatingId = null
-                        rows.removeAt(index)
-                    },
-                    onEstimate = {
-                        estimatingId = row.id
-                        onEstimate(row.name.trim())
-                    },
-                    onNameEdited = {
-                        if (estimatingId == row.id) {
-                            estimatingId = null
-                            if (estimate != EstimateState.Idle) onEstimateHandled()
-                        }
-                    },
-                )
-            }
-
-            OutlinedButton(
-                onClick = {
-                    rows += ManualRow(id = nextId)
-                    nextId++
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        rows.forEachIndexed { index, row ->
+            if (index > 0 || dividerBeforeFirst) HorizontalDivider()
+            ManualRowSection(
+                row = row,
+                number = firstNumber + index,
+                canRemove = rows.size > minRows,
+                frequent = frequent,
+                aiConfigured = aiConfigured,
+                estimate = estimate,
+                estimatingThis = estimatingId == row.id,
+                onChange = { rows[index] = it },
+                onRemove = {
+                    if (estimatingId == row.id) estimatingId = null
+                    rows.removeAt(index)
                 },
-                modifier = Modifier.fillMaxWidth(),
-            ) { ButtonLabel(AppIcons.Add, stringResource(R.string.food_add_another)) }
-
-            Button(
-                onClick = {
-                    onAdd(ManualRows.items(rows), meal)
-                    rows.clear()
-                    rows += ManualRow(id = nextId)
-                    nextId++
-                    mealChoice = null
-                    estimatingId = null
+                onEstimate = {
+                    estimatingId = row.id
+                    onEstimate(row.name.trim())
                 },
-                enabled = validCount > 0,
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text(stringResource(R.string.food_add_n, validCount)) }
+                onNameEdited = {
+                    if (estimatingId == row.id) {
+                        estimatingId = null
+                        if (estimate != EstimateState.Idle) onEstimateHandled()
+                    }
+                },
+            )
         }
+
+        OutlinedButton(
+            onClick = {
+                rows += ManualRow(id = nextId)
+                nextId++
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) { ButtonLabel(AppIcons.Add, stringResource(R.string.food_add_another)) }
     }
 }
 
