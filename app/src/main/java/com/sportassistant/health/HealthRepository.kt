@@ -8,13 +8,16 @@ import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.HeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.request.AggregateGroupByPeriodRequest
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
+import java.time.Period
 import java.time.ZoneId
+import com.sportassistant.data.DayHealth
 import kotlin.coroutines.cancellation.CancellationException
 
 data class HealthSnapshot(
@@ -69,6 +72,50 @@ class HealthRepository(private val context: Context) {
             throw e
         } catch (e: Exception) {
             HealthUiState.Error
+        }
+    }
+
+    /**
+     * The last 7 days (today included) as one entry per day, oldest first, or null when Health Connect is
+     * unavailable or not fully permitted. Days without data come back with null fields.
+     */
+    suspend fun week(): List<DayHealth>? {
+        if (HealthConnectClient.getSdkStatus(context) != HealthConnectClient.SDK_AVAILABLE) return null
+        val client = HealthConnectClient.getOrCreate(context)
+        return try {
+            if (!client.permissionController.getGrantedPermissions().containsAll(permissions)) return null
+            val firstDay = LocalDate.now().minusDays(6)
+            val range = TimeRangeFilter.between(firstDay.atStartOfDay(), java.time.LocalDateTime.now())
+
+            val activity = client.aggregateGroupByPeriod(
+                AggregateGroupByPeriodRequest(
+                    metrics = setOf(StepsRecord.COUNT_TOTAL, ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL),
+                    timeRangeFilter = range,
+                    timeRangeSlicer = Period.ofDays(1),
+                ),
+            ).associateBy { it.startTime.toLocalDate().toEpochDay() }
+            val sleep = client.aggregateGroupByPeriod(
+                AggregateGroupByPeriodRequest(
+                    metrics = setOf(SleepSessionRecord.SLEEP_DURATION_TOTAL),
+                    timeRangeFilter = range,
+                    timeRangeSlicer = Period.ofDays(1),
+                ),
+            ).associateBy { it.startTime.toLocalDate().toEpochDay() }
+
+            (0L..6L).map { offset ->
+                val day = firstDay.toEpochDay() + offset
+                val a = activity[day]?.result
+                DayHealth(
+                    epochDay = day,
+                    steps = a?.get(StepsRecord.COUNT_TOTAL),
+                    activeKcal = a?.get(ActiveCaloriesBurnedRecord.ACTIVE_CALORIES_TOTAL)?.inKilocalories?.toInt(),
+                    sleepMinutes = sleep[day]?.result?.get(SleepSessionRecord.SLEEP_DURATION_TOTAL)?.toMinutes()?.toInt(),
+                )
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
         }
     }
 

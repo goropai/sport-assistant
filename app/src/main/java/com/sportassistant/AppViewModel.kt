@@ -19,6 +19,7 @@ import com.sportassistant.ai.ObservationType
 import com.sportassistant.data.Observation
 import kotlinx.coroutines.Dispatchers
 import com.sportassistant.data.AppDatabase
+import com.sportassistant.data.DayHealth
 import com.sportassistant.data.FoodEntry
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -276,6 +277,28 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun refreshHealth() {
         viewModelScope.launch { _health.value = healthRepo.load() }
     }
+
+    /** Per-day watch data for the weekly report; null until loaded or when Health Connect is not usable. */
+    private val _weekHealth = MutableStateFlow<List<DayHealth>?>(null)
+    val weekHealth: StateFlow<List<DayHealth>?> = _weekHealth.asStateFlow()
+
+    fun refreshWeekHealth() {
+        viewModelScope.launch { _weekHealth.value = healthRepo.week() }
+    }
+
+    /** Workout log (newest first) for the weekly report. */
+    val logs: StateFlow<List<WorkoutLog>> = dao.observeAll().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    /** Calories eaten per day over the last week. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val eatenKcalByDay: StateFlow<Map<Long, Int>> = flow {
+        while (true) {
+            emit(LocalDate.now().toEpochDay())
+            delay(60_000)
+        }
+    }.distinctUntilChanged().flatMapLatest { today -> foodDao.observeKcalSince(today - 6) }
+        .map { rows -> rows.associate { it.epochDay to it.kcal } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
     private val _update = MutableStateFlow<UpdateState>(UpdateState.Idle)
     val update: StateFlow<UpdateState> = _update.asStateFlow()

@@ -93,6 +93,25 @@
     <string name="obs_history">Історія</string>
     <string name="obs_empty">Збережених перевірок ще немає.</string>
 
+    <!-- Adaptive plan and weekly report -->
+    <string name="plan_note_easier">План на сьогодні полегшений: м\'який старт або повернення після перерви. Він зростатиме, поки ви тренуєтесь регулярно.</string>
+    <string name="plan_note_harder">Ви останнім часом дуже регулярні, тому план на сьогодні трохи складніший.</string>
+    <string name="report_title">Цей тиждень</string>
+    <string name="report_headline_great">Чудовий тиждень: ви були послідовні. Так тримати!</string>
+    <string name="report_headline_good">Хороший тиждень: три активні дні. Ще один зробить його чудовим.</string>
+    <string name="report_headline_start">Початок покладено. Спробуйте додати ще один активний день.</string>
+    <string name="report_headline_restart">За останні 7 днів тренувань немає. Навіть 10 хвилин сьогодні відновлять звичку.</string>
+    <string name="report_active_days">Активних днів: %1$d з 7</string>
+    <string name="report_active_minutes">Активних хвилин: %1$d з %2$d рекомендованих на тиждень</string>
+    <string name="report_workouts_vs">Тренувань: %1$d (минулого тижня: %2$d)</string>
+    <string name="report_avg_steps">Середня кількість кроків: %1$d на день</string>
+    <string name="report_avg_sleep">Середній сон: %1$d год %2$02d хв</string>
+    <string name="report_avg_eaten">У середньому спожито: %1$d ккал за день із записами</string>
+    <string name="report_no_watch">Підключіть Health Connect на екрані «Сьогодні», щоб бачити тут кроки й сон.</string>
+    <string name="report_tip_steps">Кроків замало: спробуйте 10-хвилинну прогулянку після обіду.</string>
+    <string name="report_tip_sleep">Ви спите менше 6,5 години в середньому: спробуйте лягати на 30 хвилин раніше.</string>
+    <string name="report_tip_activity">Ви нижче 150 активних хвилин на тиждень, які рекомендує ВООЗ: додайте одне коротке тренування.</string>
+
     <!-- Watch / Health Connect -->
     <string name="health_title">З годинника</string>
     <string name="health_loading">Завантаження…</string>

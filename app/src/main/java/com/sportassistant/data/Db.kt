@@ -64,6 +64,8 @@ data class FoodEntry(
     val carbsG: Int,
 )
 
+data class DayKcal(val epochDay: Long, val kcal: Int)
+
 @Dao
 interface FoodDao {
     @Insert
@@ -74,6 +76,9 @@ interface FoodDao {
 
     @Query("SELECT * FROM food_entry WHERE epochDay = :day ORDER BY loggedAt DESC")
     fun observeDay(day: Long): Flow<List<FoodEntry>>
+
+    @Query("SELECT epochDay, SUM(kcal) AS kcal FROM food_entry WHERE epochDay >= :fromDay GROUP BY epochDay")
+    fun observeKcalSince(fromDay: Long): Flow<List<DayKcal>>
 }
 
 /** A saved posture/skin photo analysis. [photoPath] is an app-private file, null if the user chose not to keep it. */
@@ -164,6 +169,9 @@ data class Stats(
     val bestStreak: Int,
     /** Oldest first: today-6 .. today. */
     val last7: List<Boolean>,
+    /** Active days among the 6 days before today. Excludes today so today's plan stays stable all day. */
+    val activeDaysPrev6: Int,
+    val hadWorkoutBeforeToday: Boolean,
 )
 
 fun computeStats(logs: List<WorkoutLog>, today: Long): Stats {
@@ -192,5 +200,7 @@ fun computeStats(logs: List<WorkoutLog>, today: Long): Stats {
         currentStreak = current,
         bestStreak = best,
         last7 = (today - 6..today).map { it in days },
+        activeDaysPrev6 = (today - 6 until today).count { it in days },
+        hadWorkoutBeforeToday = days.any { it < today },
     )
 }

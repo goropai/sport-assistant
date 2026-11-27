@@ -62,7 +62,7 @@ object PlanGenerator {
      * Deterministic daily plan: exercises matching the user's complaints come first within each
      * category, and the pool rotates with the day so the routine does not get stale.
      */
-    fun forDay(epochDay: Long, complaints: Set<Complaint>): List<Exercise> {
+    fun forDay(epochDay: Long, complaints: Set<Complaint>, level: PlanLevel = PlanLevel.NORMAL): List<Exercise> {
         fun pick(category: Category, n: Int): List<Exercise> {
             val pool = Exercises.all.filter { it.category == category }
             if (pool.isEmpty()) return emptyList()
@@ -71,13 +71,18 @@ object PlanGenerator {
             val (relevant, other) = rotated.partition { ex -> ex.targets.any { it in complaints } }
             return (relevant + other).take(n)
         }
+        val strengthCount = when (level) {
+            PlanLevel.EASIER -> 1
+            PlanLevel.NORMAL -> 2
+            PlanLevel.HARDER -> 3
+        }
         return buildList {
             if (Complaint.EYES in complaints) addAll(pick(Category.EYES, 1))
             addAll(pick(Category.MOBILITY, 2))
-            addAll(pick(Category.STRENGTH, 2))
+            addAll(pick(Category.STRENGTH, strengthCount))
             addAll(pick(Category.CORE, 1))
-            if (epochDay % 2 == 0L) addAll(pick(Category.CARDIO, 1).filter { it.seconds <= 180 })
+            if (epochDay % 2 == 0L && level != PlanLevel.EASIER) addAll(pick(Category.CARDIO, 1).filter { it.seconds <= 180 })
             addAll(pick(Category.STRETCH, 1))
-        }
+        }.map { PlanAdapter.scale(it, level) }
     }
 }

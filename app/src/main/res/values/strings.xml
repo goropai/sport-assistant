@@ -93,6 +93,25 @@
     <string name="obs_history">History</string>
     <string name="obs_empty">No saved checks yet.</string>
 
+    <!-- Adaptive plan and weekly report -->
+    <string name="plan_note_easier">Today\'s plan is lighter: a gentle start or a comeback after a break. It grows as you stay consistent.</string>
+    <string name="plan_note_harder">Great consistency lately, so today\'s plan is a little tougher.</string>
+    <string name="report_title">This week</string>
+    <string name="report_headline_great">Excellent week: you stayed consistent. Keep it up!</string>
+    <string name="report_headline_good">Good week: three active days. One more would make it great.</string>
+    <string name="report_headline_start">A start is made. Try to add another active day.</string>
+    <string name="report_headline_restart">No workouts in the last 7 days. Even 10 minutes today restarts the habit.</string>
+    <string name="report_active_days">Active days: %1$d of 7</string>
+    <string name="report_active_minutes">Active minutes: %1$d of %2$d recommended per week</string>
+    <string name="report_workouts_vs">Workouts: %1$d (previous week: %2$d)</string>
+    <string name="report_avg_steps">Average steps: %1$d per day</string>
+    <string name="report_avg_sleep">Average sleep: %1$d h %2$02d min</string>
+    <string name="report_avg_eaten">Average eaten: %1$d kcal per logged day</string>
+    <string name="report_no_watch">Connect Health Connect on the Today screen to see steps and sleep here.</string>
+    <string name="report_tip_steps">Your steps are low: try a 10-minute walk after lunch.</string>
+    <string name="report_tip_sleep">You sleep under 6.5 hours on average: try going to bed 30 minutes earlier.</string>
+    <string name="report_tip_activity">You are under the 150 active minutes a week the WHO recommends: add one short session.</string>
+
     <!-- Watch / Health Connect -->
     <string name="health_title">From your watch</string>
     <string name="health_loading">Loading…</string>

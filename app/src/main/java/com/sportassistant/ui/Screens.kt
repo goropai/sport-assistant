@@ -41,7 +41,9 @@ import com.sportassistant.data.Category
 import com.sportassistant.data.Exercise
 import com.sportassistant.data.Exercises
 import com.sportassistant.data.Profile
+import com.sportassistant.data.PlanLevel
 import com.sportassistant.data.Stats
+import com.sportassistant.data.WeekSummary
 import com.sportassistant.health.HealthUiState
 import com.sportassistant.pose.RepTrackers
 import kotlinx.coroutines.delay
@@ -72,6 +74,7 @@ private fun ExerciseRow(ex: Exercise, onClick: () -> Unit) {
 fun TodayScreen(
     plan: List<Exercise>,
     stats: Stats,
+    level: PlanLevel,
     health: HealthUiState,
     onConnect: () -> Unit,
     onRefresh: () -> Unit,
@@ -86,6 +89,7 @@ fun TodayScreen(
             Spacer(Modifier.height(4.dp))
             Text("${stringResource(R.string.today_streak, stats.currentStreak)}  ·  ${stringResource(R.string.today_points, stats.points)}  ·  ${stringResource(R.string.today_minutes, minutes)}")
         }
+        level.note?.let { note -> item { Text("🎯 ${stringResource(note)}", style = MaterialTheme.typography.bodyMedium) } }
         item { HealthCard(health, onConnect, onRefresh) }
         items(plan, key = { it.id }) { ex -> ExerciseRow(ex) { onOpen(ex) } }
         item { Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.today_start)) } }
@@ -185,7 +189,7 @@ fun WorkoutScreen(plan: List<Exercise>, onFinish: (exercises: Int, seconds: Int)
 }
 
 @Composable
-fun ProgressScreen(stats: Stats, onObservations: () -> Unit) {
+fun ProgressScreen(stats: Stats, report: WeekSummary, hasWatchData: Boolean, onObservations: () -> Unit) {
     val today = LocalDate.now()
     val badges = listOf(
         R.string.badge_first to (stats.workouts >= 1),
@@ -201,6 +205,7 @@ fun ProgressScreen(stats: Stats, onObservations: () -> Unit) {
             StatCard(Modifier.weight(1f), stats.points.toString(), stringResource(R.string.progress_points))
             StatCard(Modifier.weight(1f), stats.currentStreak.toString(), stringResource(R.string.progress_streak))
         }
+        WeeklyReportCard(report, today, hasWatchData)
         Text(stringResource(R.string.progress_last7), style = MaterialTheme.typography.titleMedium)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             stats.last7.forEachIndexed { i, done ->

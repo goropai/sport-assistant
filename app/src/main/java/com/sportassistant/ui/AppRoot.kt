@@ -26,7 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import com.sportassistant.AppViewModel
 import com.sportassistant.R
 import com.sportassistant.data.Exercises
+import com.sportassistant.data.PlanAdapter
 import com.sportassistant.data.PlanGenerator
+import com.sportassistant.data.WeeklyReport
 import com.sportassistant.data.Profile
 import com.sportassistant.pose.RepTrackers
 import java.time.LocalDate
@@ -56,7 +58,8 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
     val stats by vm.stats.collectAsState()
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
-    val plan = remember(profile.complaints) { PlanGenerator.forDay(LocalDate.now().toEpochDay(), profile.complaints) }
+    val level = PlanAdapter.levelFor(stats.activeDaysPrev6, stats.hadWorkoutBeforeToday, profile.activity)
+    val plan = remember(profile.complaints, level) { PlanGenerator.forDay(LocalDate.now().toEpochDay(), profile.complaints, level) }
 
     Scaffold(
         bottomBar = {
@@ -88,6 +91,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                 TodayScreen(
                     plan,
                     stats,
+                    level,
                     health,
                     onConnect = { grant.launch(vm.healthPermissions) },
                     onRefresh = vm::refreshHealth,
@@ -125,7 +129,14 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                 WalkScreen(track, walks, profile.weightKg, onStart = vm::startWalk, onFinish = vm::finishWalk)
             }
             composable("library") { LibraryScreen(onOpen = { nav.navigate("exercise/${it.id}") }) }
-            composable("progress") { ProgressScreen(stats, onObservations = { nav.navigate("observations") }) }
+            composable("progress") {
+                val logs by vm.logs.collectAsState()
+                val week by vm.weekHealth.collectAsState()
+                val eaten by vm.eatenKcalByDay.collectAsState()
+                LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshWeekHealth() }
+                val report = remember(logs, week, eaten) { WeeklyReport.build(LocalDate.now().toEpochDay(), logs, week, eaten) }
+                ProgressScreen(stats, report, hasWatchData = week != null, onObservations = { nav.navigate("observations") })
+            }
             composable("observations") {
                 val items by vm.observations.collectAsState()
                 val obsState by vm.obsState.collectAsState()
