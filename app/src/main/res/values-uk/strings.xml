@@ -37,9 +37,9 @@
     <string name="food_source_watch">активні з годинника</string>
     <string name="food_source_walks">активні з прогулянок</string>
     <string name="food_macros">Білки %1$d г · Жири %2$d г · Вуглеводи %3$d г</string>
-    <string name="food_photo">📷 Фото</string>
-    <string name="food_gallery">🖼 Галерея</string>
-    <string name="food_manual">✍ Вручну</string>
+    <string name="food_photo">Фото</string>
+    <string name="food_gallery">Галерея</string>
+    <string name="food_manual">Вручну</string>
     <string name="food_analyzing">Аналізую фото…</string>
     <string name="food_review_title">Перевірте оцінку</string>
     <string name="food_review_hint">Оцінка наближена (±20–30%). Виправте назви й вагу порцій перед збереженням.</string>
@@ -62,10 +62,11 @@
     <string name="food_per100_info">На 100 г: %1$d ккал · Б %2$d · Ж %3$d · В %4$d</string>
     <string name="food_kcal_auto">Калорії рахуються за вагою; змініть число, щоб вказати своє.</string>
     <string name="food_calc_line">%1$d г × %2$d ккал/100 г = %3$d ккал (змініть число, щоб вказати своє)</string>
-    <string name="food_kcal_reset">↺ Перерахувати за вагою</string>
-    <string name="food_ai_estimate">✨ Оцінити через ШІ</string>
+    <string name="food_kcal_reset">Перерахувати за вагою</string>
+    <string name="food_ai_estimate">Оцінити через ШІ</string>
     <string name="food_ai_loading">Шукаю дані…</string>
     <string name="food_ai_notfound">Не вдалося знайти поживність для цієї назви. Введіть калорії вручну.</string>
+    <string name="food_delete">Видалити</string>
     <string name="food_not_configured">Для аналізу фото потрібен ваш ключ Gemini API (Налаштування). Поки що можна додавати їжу вручну.</string>
     <string name="settings_ai">ШІ-аналіз їжі</string>
     <string name="settings_ai_hint">Введіть власний ключ Gemini API (безкоштовно створюється в Google AI Studio). Фото надсилаються напряму до Google на аналіз; ключ зберігається лише на цьому телефоні.</string>

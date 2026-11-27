@@ -8,8 +8,13 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,9 +45,46 @@ import kotlin.math.min
 fun ExerciseVisual(ex: Exercise, modifier: Modifier = Modifier) {
     val def = Figures.forExercise(ex.id)
     if (def == null) {
-        Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { Text(ex.emoji, fontSize = 72.sp) }
+        Box(modifier.fillMaxWidth().height(190.dp), contentAlignment = Alignment.Center) {
+            IconBadge(AppIcons.forCategory(ex.category), 120.dp)
+        }
     } else {
         ExerciseFigure(def, stringResource(ex.name), modifier.fillMaxWidth().height(190.dp))
+    }
+}
+
+/** A small static picture of the exercise for lists: the figure at its first pose, cropped to the figure. */
+@Composable
+fun ExerciseThumb(ex: Exercise, size: Dp = 56.dp, modifier: Modifier = Modifier) {
+    val def = Figures.forExercise(ex.id)
+    if (def == null) {
+        IconBadge(AppIcons.forCategory(ex.category), size, modifier)
+        return
+    }
+    val near = MaterialTheme.colorScheme.primary
+    val far = near.copy(alpha = 0.4f)
+    val scenery = MaterialTheme.colorScheme.outline
+    val background = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+    Canvas(modifier.size(size).clip(RoundedCornerShape(14.dp)).background(background)) {
+        val sk = def.frame(0f)
+        // Fit the figure's own bounding box (plus its props and the floor) into the square.
+        val pts = sk.points + def.props.flatMap { listOf(it.first, it.second) } + listOf(Pt(sk.points.minOf { it.x }, FLOOR_Y), Pt(sk.points.maxOf { it.x }, FLOOR_Y))
+        val pad = 0.08f
+        val minX = pts.minOf { it.x } - pad
+        val maxX = pts.maxOf { it.x } + pad
+        val minY = pts.minOf { it.y } - sk.headRadius - pad
+        val maxY = pts.maxOf { it.y } + pad
+        val scale = min(this.size.width / (maxX - minX), this.size.height / (maxY - minY))
+        val ox = (this.size.width - (maxX - minX) * scale) / 2
+        val oy = (this.size.height - (maxY - minY) * scale) / 2
+        fun at(p: Pt) = Offset(ox + (p.x - minX) * scale, oy + (p.y - minY) * scale)
+
+        val thin = max(1.dp.toPx(), 0.006f * scale)
+        val thick = max(2.dp.toPx(), 0.03f * scale)
+        for ((a, b) in def.props) drawLine(scenery, at(a), at(b), strokeWidth = thin, cap = StrokeCap.Round)
+        drawLine(scenery, at(Pt(minX + pad, FLOOR_Y)), at(Pt(maxX - pad, FLOOR_Y)), strokeWidth = thin, cap = StrokeCap.Round)
+        for (s in sk.segments) drawLine(if (s.near) near else far, at(s.a), at(s.b), strokeWidth = thick, cap = StrokeCap.Round)
+        drawCircle(near, radius = sk.headRadius * scale, center = at(sk.head), style = Stroke(width = thick))
     }
 }
 

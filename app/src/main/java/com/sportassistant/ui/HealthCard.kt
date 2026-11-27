@@ -27,7 +27,7 @@ const val STEP_GOAL = 7000
 fun HealthCard(state: HealthUiState, onConnect: () -> Unit, onRefresh: () -> Unit) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("⌚  ${stringResource(R.string.health_title)}", style = MaterialTheme.typography.titleMedium)
+            IconText(AppIcons.Watch, stringResource(R.string.health_title), style = MaterialTheme.typography.titleMedium, iconSize = 24.dp)
             when (state) {
                 HealthUiState.Loading -> Text(stringResource(R.string.health_loading))
                 is HealthUiState.Unavailable -> Text(
@@ -63,7 +63,7 @@ private fun SnapshotContent(s: HealthSnapshot) {
     }
     s.lastHr?.let { last ->
         val range = if (s.minHr != null && s.maxHr != null) " · ${stringResource(R.string.health_hr_range, s.avgHr ?: 0, s.minHr, s.maxHr)}" else ""
-        Text("❤️ ${stringResource(R.string.health_hr_last, last)}$range", style = MaterialTheme.typography.bodyMedium)
+        IconText(AppIcons.HeartRate, "${stringResource(R.string.health_hr_last, last)}$range", tint = MaterialTheme.colorScheme.error)
     }
 }
 

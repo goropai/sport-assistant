@@ -48,6 +48,8 @@ import com.sportassistant.health.HealthUiState
 import com.sportassistant.pose.RepTrackers
 import kotlinx.coroutines.delay
 import android.net.Uri
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.AlertDialog
@@ -67,7 +69,7 @@ private fun exerciseDose(ex: Exercise): String = when {
 private fun ExerciseRow(ex: Exercise, onClick: () -> Unit) {
     Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(ex.emoji, fontSize = 32.sp)
+            ExerciseThumb(ex)
             Column(Modifier.weight(1f)) {
                 Text(stringResource(ex.name), style = MaterialTheme.typography.titleMedium)
                 Text(stringResource(ex.category.label), style = MaterialTheme.typography.bodySmall)
@@ -96,11 +98,11 @@ fun TodayScreen(
             Spacer(Modifier.height(4.dp))
             Text("${stringResource(R.string.today_streak, stats.currentStreak)}  ·  ${stringResource(R.string.today_points, stats.points)}  ·  ${stringResource(R.string.today_minutes, minutes)}")
         }
-        level.note?.let { note -> item { Text("🎯 ${stringResource(note)}", style = MaterialTheme.typography.bodyMedium) } }
+        level.note?.let { note -> item { IconText(AppIcons.Goal, stringResource(note)) } }
         item { HealthCard(health, onConnect, onRefresh) }
         items(plan, key = { it.id }) { ex -> ExerciseRow(ex) { onOpen(ex) } }
         item { Button(onClick = onStart, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.today_start)) } }
-        item { OutlinedButton(onClick = onLibrary, modifier = Modifier.fillMaxWidth()) { Text("📚  ${stringResource(R.string.tab_library)}") } }
+        item { OutlinedButton(onClick = onLibrary, modifier = Modifier.fillMaxWidth()) { ButtonLabel(AppIcons.Library, stringResource(R.string.tab_library)) } }
         item { Text(stringResource(R.string.disclaimer_medical), style = MaterialTheme.typography.bodySmall) }
     }
 }
@@ -134,12 +136,12 @@ fun ExerciseDetailScreen(ex: Exercise, onBack: () -> Unit, onCamera: (Exercise) 
 private fun CountButtons(ex: Exercise, onCamera: (Exercise) -> Unit, onNose: (Exercise) -> Unit) {
     if (RepTrackers.forExercise(ex.id) != null) {
         OutlinedButton(onClick = { onCamera(ex) }, modifier = Modifier.fillMaxWidth()) {
-            Text("📷  ${stringResource(R.string.camera_count)}")
+            ButtonLabel(AppIcons.Camera, stringResource(R.string.camera_count))
         }
     }
     if (ex.id == NOSE_TOUCH_EXERCISE) {
         OutlinedButton(onClick = { onNose(ex) }, modifier = Modifier.fillMaxWidth()) {
-            Text("👃  ${stringResource(R.string.nose_count)}")
+            ButtonLabel(AppIcons.Nose, stringResource(R.string.nose_count))
         }
     }
 }
@@ -164,7 +166,7 @@ fun WorkoutScreen(
 
     if (awarded >= 0) {
         Column(Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("🎉", fontSize = 72.sp)
+            IconBadge(AppIcons.Celebrate, 120.dp)
             Text(stringResource(R.string.workout_complete_title), style = MaterialTheme.typography.headlineMedium)
             Text(stringResource(R.string.workout_complete_msg, awarded), textAlign = TextAlign.Center)
             Spacer(Modifier.height(24.dp))
@@ -216,11 +218,11 @@ fun WorkoutScreen(
 fun ProgressScreen(stats: Stats, report: WeekSummary, hasWatchData: Boolean, onObservations: () -> Unit) {
     val today = LocalDate.now()
     val badges = listOf(
-        R.string.badge_first to (stats.workouts >= 1),
-        R.string.badge_streak3 to (stats.bestStreak >= 3),
-        R.string.badge_streak7 to (stats.bestStreak >= 7),
-        R.string.badge_workouts10 to (stats.workouts >= 10),
-        R.string.badge_points500 to (stats.points >= 500),
+        Triple(R.string.badge_first, AppIcons.BadgeFirst, stats.workouts >= 1),
+        Triple(R.string.badge_streak3, AppIcons.BadgeStreak3, stats.bestStreak >= 3),
+        Triple(R.string.badge_streak7, AppIcons.BadgeStreak7, stats.bestStreak >= 7),
+        Triple(R.string.badge_workouts10, AppIcons.BadgeWorkouts, stats.workouts >= 10),
+        Triple(R.string.badge_points500, AppIcons.BadgePoints, stats.points >= 500),
     )
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(stringResource(R.string.progress_title), style = MaterialTheme.typography.headlineMedium)
@@ -235,15 +237,26 @@ fun ProgressScreen(stats: Stats, report: WeekSummary, hasWatchData: Boolean, onO
             stats.last7.forEachIndexed { i, done ->
                 val d = today.minusDays((6 - i).toLong())
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(if (done) "✅" else "⚪", fontSize = 24.sp)
+                    Icon(
+                        if (done) AppIcons.Done else AppIcons.NotDone,
+                        contentDescription = null,
+                        tint = if (done) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.size(28.dp),
+                    )
                     Text(d.dayOfMonth.toString(), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
-        OutlinedButton(onClick = onObservations, modifier = Modifier.fillMaxWidth()) { Text("🪞  ${stringResource(R.string.obs_title)}") }
+        OutlinedButton(onClick = onObservations, modifier = Modifier.fillMaxWidth()) { ButtonLabel(AppIcons.Posture, stringResource(R.string.obs_title)) }
         Text(stringResource(R.string.progress_badges), style = MaterialTheme.typography.titleMedium)
-        badges.forEach { (label, earned) ->
-            Text("${if (earned) "🏅" else "🔒"}  ${stringResource(label)}", color = if (earned) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline)
+        badges.forEach { (label, icon, earned) ->
+            IconText(
+                icon = if (earned) icon else AppIcons.Locked,
+                text = stringResource(label),
+                color = if (earned) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline,
+                tint = if (earned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                iconSize = 24.dp,
+            )
         }
     }
 }

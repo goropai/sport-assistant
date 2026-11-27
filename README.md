@@ -42,6 +42,10 @@ Backup (Settings): export everything to one JSON file via the system file picker
 after confirmation (`backup/BackupCodec`, replaces the data in a single transaction). Photos and the
 Gemini key are never included.
 
+Visual style: no emoji anywhere in the UI. Icons are Material Symbols (rounded) from one place,
+`ui/AppIcons.kt`; exercise lists show a static thumbnail of the stick figure. `NoEmojiTest` fails the
+build if an emoji sneaks into code or strings.
+
 Exercise illustrations: 13 of 14 exercises have an animated stick figure (two key poses, drawn in code
 by a small forward/inverse-kinematics engine in `figure/`). `FigureRenderTest` renders every pose to
 `app/build/figures/sheet.png` and checks the figures stay inside the scene. The eye-rest exercise

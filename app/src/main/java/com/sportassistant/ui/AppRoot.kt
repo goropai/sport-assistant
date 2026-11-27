@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -33,14 +35,14 @@ import com.sportassistant.data.Profile
 import com.sportassistant.pose.RepTrackers
 import java.time.LocalDate
 
-private data class Tab(val route: String, val label: Int, val emoji: String)
+private data class Tab(val route: String, val label: Int, val icon: ImageVector)
 
 private val tabs = listOf(
-    Tab("today", R.string.tab_today, "🏠"),
-    Tab("walk", R.string.tab_walk, "🚶"),
-    Tab("food", R.string.tab_food, "🍽️"),
-    Tab("progress", R.string.tab_progress, "📈"),
-    Tab("settings", R.string.tab_settings, "⚙️"),
+    Tab("today", R.string.tab_today, AppIcons.Today),
+    Tab("walk", R.string.tab_walk, AppIcons.Walk),
+    Tab("food", R.string.tab_food, AppIcons.Food),
+    Tab("progress", R.string.tab_progress, AppIcons.Progress),
+    Tab("settings", R.string.tab_settings, AppIcons.Settings),
 )
 
 @Composable
@@ -75,7 +77,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                                     restoreState = true
                                 }
                             },
-                            icon = { Text(tab.emoji) },
+                            icon = { Icon(tab.icon, contentDescription = null) },
                             label = { Text(stringResource(tab.label)) },
                         )
                     }

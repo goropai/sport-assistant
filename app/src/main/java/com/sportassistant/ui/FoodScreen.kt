@@ -21,6 +21,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -106,14 +108,14 @@ fun FoodScreen(
                     },
                     enabled = aiConfigured && analysis != FoodAnalysisState.Analyzing,
                     modifier = Modifier.weight(1f),
-                ) { Text(stringResource(R.string.food_photo)) }
+                ) { ButtonLabel(AppIcons.Camera, stringResource(R.string.food_photo)) }
                 Button(
                     onClick = { pickImage.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                     enabled = aiConfigured && analysis != FoodAnalysisState.Analyzing,
                     modifier = Modifier.weight(1f),
-                ) { Text(stringResource(R.string.food_gallery)) }
+                ) { ButtonLabel(AppIcons.Gallery, stringResource(R.string.food_gallery)) }
                 OutlinedButton(onClick = { showManual = !showManual }, modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.food_manual))
+                    ButtonLabel(AppIcons.Manual, stringResource(R.string.food_manual))
                 }
             }
         }
@@ -239,7 +241,7 @@ private fun ReviewCard(items: List<FoodItem>, onSave: (List<FoodItem>) -> Unit, 
                         label = { Text(stringResource(R.string.food_grams)) }, singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
-                    TextButton(onClick = { drafts.remove(d) }) { Text("✕") }
+                    IconButton(onClick = { drafts.remove(d) }) { Icon(AppIcons.Delete, contentDescription = stringResource(R.string.food_delete)) }
                 }
                 Text(stringResource(R.string.food_kcal_fmt, d.toItem().kcal), style = MaterialTheme.typography.bodySmall)
             }
@@ -340,7 +342,7 @@ private fun ManualCard(
                     style = MaterialTheme.typography.bodySmall,
                 )
                 if (kcalOverride != null) {
-                    TextButton(onClick = { kcalOverride = null }) { Text(stringResource(R.string.food_kcal_reset)) }
+                    TextButton(onClick = { kcalOverride = null }) { ButtonLabel(AppIcons.Recalculate, stringResource(R.string.food_kcal_reset)) }
                 } else if (auto != null) {
                     // Spell the sum out so it is clear the total already uses the entered weight.
                     Text(
@@ -363,7 +365,7 @@ private fun ManualCard(
                     else -> Unit
                 }
                 OutlinedButton(onClick = { onEstimate(name.trim()) }, enabled = estimate != EstimateState.Loading) {
-                    Text(stringResource(R.string.food_ai_estimate))
+                    ButtonLabel(AppIcons.Ai, stringResource(R.string.food_ai_estimate))
                 }
             }
 
@@ -401,7 +403,7 @@ private fun EntryRow(e: FoodEntry, onDelete: (Long) -> Unit) {
                     Text(stringResource(R.string.food_macros, e.proteinG, e.fatG, e.carbsG), style = MaterialTheme.typography.bodySmall)
                 }
             }
-            TextButton(onClick = { onDelete(e.id) }) { Text("✕") }
+            IconButton(onClick = { onDelete(e.id) }) { Icon(AppIcons.Delete, contentDescription = stringResource(R.string.food_delete)) }
         }
     }
 }

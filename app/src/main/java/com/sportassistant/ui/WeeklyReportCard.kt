@@ -60,7 +60,7 @@ fun WeeklyReportCard(s: WeekSummary, today: LocalDate, hasWatchData: Boolean) {
                 Text(stringResource(R.string.report_no_watch), style = MaterialTheme.typography.bodySmall)
             }
 
-            s.tips.forEach { Text("💡 ${stringResource(it.text)}", style = MaterialTheme.typography.bodyMedium) }
+            s.tips.forEach { IconText(AppIcons.Tip, stringResource(it.text)) }
         }
     }
 }

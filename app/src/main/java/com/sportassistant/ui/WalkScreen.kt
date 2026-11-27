@@ -118,7 +118,7 @@ fun WalkScreen(
                         else permission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
                     },
                     modifier = Modifier.fillMaxWidth(),
-                ) { Text("🚶  ${stringResource(R.string.walk_start)}") }
+                ) { ButtonLabel(AppIcons.Walk, stringResource(R.string.walk_start)) }
             }
             item { Text(stringResource(R.string.walk_permission_hint), style = MaterialTheme.typography.bodySmall) }
             if (gpsOff) item { Text(stringResource(R.string.walk_gps_off), color = MaterialTheme.colorScheme.error) }

@@ -16,8 +16,8 @@ android {
         applicationId = "com.sportassistant"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "0.10.0"
+        versionCode = 14
+        versionName = "0.11.0"
 
         // HTTPS URL of a version.json (see README, "Updates"). Empty disables the update check.
         // Set in gradle.properties or with -PupdateUrl=...
@@ -50,6 +50,8 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2026.11.01")
     implementation(composeBom)
     implementation("androidx.compose.material3:material3")
+    // Material Symbols (rounded) as vector icons: one consistent, theme-aware style for the whole UI.
+    implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")

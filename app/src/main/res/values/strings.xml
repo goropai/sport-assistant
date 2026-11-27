@@ -37,9 +37,9 @@
     <string name="food_source_watch">active from your watch</string>
     <string name="food_source_walks">active from tracked walks</string>
     <string name="food_macros">Protein %1$d g · Fat %2$d g · Carbs %3$d g</string>
-    <string name="food_photo">📷 Photo</string>
-    <string name="food_gallery">🖼 Gallery</string>
-    <string name="food_manual">✍ Manual</string>
+    <string name="food_photo">Photo</string>
+    <string name="food_gallery">Gallery</string>
+    <string name="food_manual">Manual</string>
     <string name="food_analyzing">Analyzing the photo…</string>
     <string name="food_review_title">Check the estimate</string>
     <string name="food_review_hint">Estimates are approximate (±20–30%). Fix names and portion weights before saving.</string>
@@ -62,10 +62,11 @@
     <string name="food_per100_info">Per 100 g: %1$d kcal · P %2$d · F %3$d · C %4$d</string>
     <string name="food_kcal_auto">Calories are calculated from the weight; edit the number to override.</string>
     <string name="food_calc_line">%1$d g × %2$d kcal/100 g = %3$d kcal (edit the number to override)</string>
-    <string name="food_kcal_reset">↺ Recalculate from weight</string>
-    <string name="food_ai_estimate">✨ Estimate with AI</string>
+    <string name="food_kcal_reset">Recalculate from weight</string>
+    <string name="food_ai_estimate">Estimate with AI</string>
     <string name="food_ai_loading">Looking it up…</string>
     <string name="food_ai_notfound">Could not find nutrition data for this name. Enter the calories by hand.</string>
+    <string name="food_delete">Delete</string>
     <string name="food_not_configured">Photo analysis needs your Gemini API key (Settings). You can add food manually meanwhile.</string>
     <string name="settings_ai">AI food analysis</string>
     <string name="settings_ai_hint">Enter your own Gemini API key (free to create in Google AI Studio). Photos are sent directly to Google for analysis; the key is stored only on this phone.</string>
