@@ -13,7 +13,9 @@ Implemented (MVP): onboarding questionnaire, 14 exercises with step-by-step text
 adapts to complaints, workout runner with timers, points / streak / badges, reminders
 (move, water, teeth) via WorkManager.
 
-Also: camera rep counting (ML Kit Pose) for squats, push-ups, wall push-ups and glute bridge;
+Also: camera rep counting (ML Kit Pose) for squats, push-ups, wall push-ups and glute bridge, with the
+detected skeleton drawn over the video, a live joint angle readout and a Strict/Normal/Easy sensitivity
+setting;
 GPS walk tracking (foreground service, offline route preview, distance/pace/kcal, history).
 
 Watch data (Redmi Watch 5 Lite): read-only from Health Connect, where Mi Fitness writes steps, heart

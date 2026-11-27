@@ -26,6 +26,8 @@ data class Profile(
     val sex: Sex = Sex.UNSPECIFIED,
     /** The user's own Gemini API key; empty disables photo analysis. Stored in the app-private DataStore. */
     val geminiKey: String = "",
+    /** Rep counting strictness: 0 strict, 1 normal, 2 easy (see pose.Sensitivity). */
+    val repSensitivity: Int = 1,
 )
 
 private val Context.dataStore by preferencesDataStore("profile")
@@ -44,6 +46,7 @@ class ProfileStore(private val context: Context) {
         val remTeeth = booleanPreferencesKey("rem_teeth")
         val sex = stringPreferencesKey("sex")
         val geminiKey = stringPreferencesKey("gemini_key")
+        val repSensitivity = intPreferencesKey("rep_sensitivity")
     }
 
     val profile: Flow<Profile> = context.dataStore.data.map { it.toProfile() }
@@ -62,6 +65,7 @@ class ProfileStore(private val context: Context) {
             it[K.remTeeth] = p.remTeeth
             it[K.sex] = p.sex.name
             it[K.geminiKey] = p.geminiKey
+            it[K.repSensitivity] = p.repSensitivity
         }
     }
 
@@ -82,6 +86,7 @@ class ProfileStore(private val context: Context) {
             remTeeth = this[K.remTeeth] ?: d.remTeeth,
             sex = Sex.entries.firstOrNull { it.name == this[K.sex] } ?: d.sex,
             geminiKey = this[K.geminiKey] ?: d.geminiKey,
+            repSensitivity = (this[K.repSensitivity] ?: d.repSensitivity).coerceIn(0, 2),
         )
     }
 }

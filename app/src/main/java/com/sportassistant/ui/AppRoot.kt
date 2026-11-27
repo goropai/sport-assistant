@@ -161,7 +161,15 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
             composable("camera/{id}") { entry ->
                 val ex = Exercises.byId(entry.arguments?.getString("id").orEmpty())
                 val spec = ex?.let { RepTrackers.forExercise(it.id) }
-                if (ex != null && spec != null) CameraScreen(ex, spec, onDone = { nav.popBackStack() })
+                if (ex != null && spec != null) {
+                    CameraScreen(
+                        ex,
+                        spec,
+                        sensitivity = profile.repSensitivity,
+                        onSensitivity = { vm.saveProfile(profile.copy(repSensitivity = it)) },
+                        onDone = { nav.popBackStack() },
+                    )
+                }
             }
         }
     }

@@ -26,6 +26,9 @@ class RepCounter(
     var reps = 0
         private set
 
+    /** True while the user is in the working position (between leaving rest and returning to it). */
+    val isActive: Boolean get() = phase == Phase.ACTIVE
+
     /** Returns true when this sample completed a repetition. */
     fun update(angle: Float, nowMs: Long): Boolean {
         val s = smoothed?.let { it + smoothing * (angle - it) } ?: angle

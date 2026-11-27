@@ -233,6 +233,13 @@
     <string name="camera_target">із %1$d</string>
     <string name="camera_target_reached">Ціль досягнуто!</string>
     <string name="camera_done">Готово</string>
+    <string name="camera_angle_fmt">Кут суглоба %1$d° · %2$s</string>
+    <string name="camera_phase_rest">вихідне положення</string>
+    <string name="camera_phase_active">у русі</string>
+    <string name="camera_sensitivity">Чутливість підрахунку (якщо повтори пропускаються, оберіть «Легка»)</string>
+    <string name="sens_strict">Сувора</string>
+    <string name="sens_normal">Звичайна</string>
+    <string name="sens_easy">Легка</string>
     <string name="ex_squats_steps">1. Станьте перед стільцем, ноги на ширині плечей.\n2. Відведіть таз назад і опускайтесь, доки легко не торкнетесь стільця; коліна йдуть над носками.\n3. Відштовхніться п\'ятами й підведіться.</string>
     <string name="ex_glute_bridge">Сідничний місток</string>
     <string name="ex_glute_bridge_steps">1. Ляжте на спину, коліна зігнуті, стопи на підлозі на ширині таза.\n2. Напружте сідниці й підніміть таз, щоб плечі, таз і коліна стали на одній лінії.\n3. Затримайтесь на 1 секунду й повільно опустіться.</string>

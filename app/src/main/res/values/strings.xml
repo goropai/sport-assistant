@@ -233,6 +233,13 @@
     <string name="camera_target">of %1$d</string>
     <string name="camera_target_reached">Target reached!</string>
     <string name="camera_done">Done</string>
+    <string name="camera_angle_fmt">Joint angle %1$d° · %2$s</string>
+    <string name="camera_phase_rest">start position</string>
+    <string name="camera_phase_active">in the movement</string>
+    <string name="camera_sensitivity">Counting sensitivity (if reps are missed, try Easy)</string>
+    <string name="sens_strict">Strict</string>
+    <string name="sens_normal">Normal</string>
+    <string name="sens_easy">Easy</string>
     <string name="ex_squats_steps">1. Stand with feet shoulder-width apart in front of a chair.\n2. Push the hips back and lower until you lightly touch the chair, knees tracking over toes.\n3. Press through your heels to stand up.</string>
     <string name="ex_glute_bridge">Glute bridge</string>
     <string name="ex_glute_bridge_steps">1. Lie on your back, knees bent, feet flat and hip-width apart.\n2. Squeeze the glutes and lift the hips until shoulders, hips and knees form a line.\n3. Pause for 1 second, then lower slowly.</string>
