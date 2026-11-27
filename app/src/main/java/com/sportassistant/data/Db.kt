@@ -29,6 +29,15 @@ interface WorkoutLogDao {
 
     @Query("SELECT * FROM workout_log ORDER BY id DESC")
     fun observeAll(): Flow<List<WorkoutLog>>
+
+    @Query("SELECT * FROM workout_log ORDER BY id")
+    suspend fun all(): List<WorkoutLog>
+
+    @Insert
+    suspend fun insertAll(items: List<WorkoutLog>)
+
+    @Query("DELETE FROM workout_log")
+    suspend fun deleteAll()
 }
 
 @Entity(tableName = "walk")
@@ -49,6 +58,15 @@ interface WalkDao {
 
     @Query("SELECT * FROM walk ORDER BY id DESC LIMIT 30")
     fun observeRecent(): Flow<List<Walk>>
+
+    @Query("SELECT * FROM walk ORDER BY id")
+    suspend fun all(): List<Walk>
+
+    @Insert
+    suspend fun insertAll(items: List<Walk>)
+
+    @Query("DELETE FROM walk")
+    suspend fun deleteAll()
 }
 
 @Entity(tableName = "food_entry")
@@ -73,6 +91,12 @@ interface FoodDao {
 
     @Query("DELETE FROM food_entry WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Query("SELECT * FROM food_entry ORDER BY id")
+    suspend fun all(): List<FoodEntry>
+
+    @Query("DELETE FROM food_entry")
+    suspend fun deleteAll()
 
     @Query("SELECT * FROM food_entry WHERE epochDay = :day ORDER BY loggedAt DESC")
     fun observeDay(day: Long): Flow<List<FoodEntry>>
@@ -110,6 +134,15 @@ interface ObservationDao {
 
     @Query("SELECT * FROM observation ORDER BY id DESC")
     fun observeAll(): Flow<List<Observation>>
+
+    @Query("SELECT * FROM observation ORDER BY id")
+    suspend fun all(): List<Observation>
+
+    @Insert
+    suspend fun insertAll(items: List<Observation>)
+
+    @Query("DELETE FROM observation")
+    suspend fun deleteAll()
 }
 
 private val MIGRATION_3_4 = object : Migration(3, 4) {

@@ -93,6 +93,24 @@
     <string name="obs_history">History</string>
     <string name="obs_empty">No saved checks yet.</string>
 
+    <!-- Backup -->
+    <string name="backup_title">Backup</string>
+    <string name="backup_hint">Save your history, walks, food diary and checks to a file (for example in Downloads or Drive) so they survive reinstalling the app. Photos and your Gemini key are not included.</string>
+    <string name="backup_export">Save a backup file</string>
+    <string name="backup_restore">Restore from a backup file</string>
+    <string name="backup_working">Working…</string>
+    <string name="backup_exported">Backup saved.</string>
+    <string name="backup_restored">Data restored.</string>
+    <string name="backup_confirm_title">Replace the data on this phone?</string>
+    <string name="backup_confirm_text">The backup contains %1$d workouts, %2$d walks, %3$d food entries and %4$d posture/skin checks. Restoring replaces everything currently on this phone, including saved check photos. This cannot be undone.</string>
+    <string name="backup_confirm_ok">Replace</string>
+    <string name="backup_err_read">Could not read the file.</string>
+    <string name="backup_err_write">Could not save the data. Check the destination and try again.</string>
+    <string name="backup_err_not_backup">This file is not a Sport Assistant backup.</string>
+    <string name="backup_err_newer">This backup was made by a newer version of the app. Update the app first.</string>
+    <string name="backup_err_corrupt">The backup file is damaged and cannot be restored.</string>
+    <string name="backup_err_large">The file is too large to be a backup.</string>
+
     <!-- Adaptive plan and weekly report -->
     <string name="plan_note_easier">Today\'s plan is lighter: a gentle start or a comeback after a break. It grows as you stay consistent.</string>
     <string name="plan_note_harder">Great consistency lately, so today\'s plan is a little tougher.</string>

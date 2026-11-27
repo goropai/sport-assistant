@@ -34,6 +34,10 @@ several consistent days (`PlanAdapter`, based on the days before today so the pl
 Weekly report (Progress tab): active days and minutes (WHO goal 150/week), comparison with the previous
 week, steps and sleep from the watch, average calories eaten, and simple tips.
 
+Backup (Settings): export everything to one JSON file via the system file picker and restore from it
+after confirmation (`backup/BackupCodec`, replaces the data in a single transaction). Photos and the
+Gemini key are never included.
+
 Exercise illustrations: 13 of 14 exercises have an animated stick figure (two key poses, drawn in code
 by a small forward/inverse-kinematics engine in `figure/`). `FigureRenderTest` renders every pose to
 `app/build/figures/sheet.png` and checks the figures stay inside the scene. The eye-rest exercise

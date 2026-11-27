@@ -93,6 +93,24 @@
     <string name="obs_history">Історія</string>
     <string name="obs_empty">Збережених перевірок ще немає.</string>
 
+    <!-- Backup -->
+    <string name="backup_title">Резервна копія</string>
+    <string name="backup_hint">Збережіть історію, прогулянки, щоденник їжі та перевірки у файл (наприклад, у Завантаження чи на Диск), щоб вони пережили перевстановлення застосунку. Фото та ваш ключ Gemini до копії не входять.</string>
+    <string name="backup_export">Зберегти файл копії</string>
+    <string name="backup_restore">Відновити з файлу копії</string>
+    <string name="backup_working">Виконую…</string>
+    <string name="backup_exported">Копію збережено.</string>
+    <string name="backup_restored">Дані відновлено.</string>
+    <string name="backup_confirm_title">Замінити дані на цьому телефоні?</string>
+    <string name="backup_confirm_text">У копії: тренувань — %1$d, прогулянок — %2$d, записів їжі — %3$d, перевірок постави/шкіри — %4$d. Відновлення замінює все, що зараз є на цьому телефоні, зокрема збережені фото перевірок. Цю дію не можна скасувати.</string>
+    <string name="backup_confirm_ok">Замінити</string>
+    <string name="backup_err_read">Не вдалося прочитати файл.</string>
+    <string name="backup_err_write">Не вдалося зберегти дані. Перевірте місце призначення й спробуйте знову.</string>
+    <string name="backup_err_not_backup">Цей файл не є копією Спорт-помічника.</string>
+    <string name="backup_err_newer">Цю копію зроблено новішою версією застосунку. Спершу оновіть застосунок.</string>
+    <string name="backup_err_corrupt">Файл копії пошкоджений і не може бути відновлений.</string>
+    <string name="backup_err_large">Файл завеликий для копії.</string>
+
     <!-- Adaptive plan and weekly report -->
     <string name="plan_note_easier">План на сьогодні полегшений: м\'який старт або повернення після перерви. Він зростатиме, поки ви тренуєтесь регулярно.</string>
     <string name="plan_note_harder">Ви останнім часом дуже регулярні, тому план на сьогодні трохи складніший.</string>

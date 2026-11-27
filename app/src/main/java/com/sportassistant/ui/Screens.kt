@@ -47,6 +47,13 @@ import com.sportassistant.data.WeekSummary
 import com.sportassistant.health.HealthUiState
 import com.sportassistant.pose.RepTrackers
 import kotlinx.coroutines.delay
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import com.sportassistant.BackupFailure
+import com.sportassistant.BackupState
 import java.time.LocalDate
 
 @Composable
@@ -242,6 +249,11 @@ fun SettingsScreen(
     onRedo: () -> Unit,
     onCheckUpdate: () -> Unit,
     onInstall: (UpdateInfo) -> Unit,
+    backup: BackupState,
+    onExport: (Uri) -> Unit,
+    onReadBackup: (Uri) -> Unit,
+    onConfirmRestore: () -> Unit,
+    onDismissBackup: () -> Unit,
 ) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
@@ -266,9 +278,68 @@ fun SettingsScreen(
             modifier = Modifier.fillMaxWidth(),
         ) { Text(stringResource(R.string.settings_save)) }
 
+        Text(stringResource(R.string.backup_title), style = MaterialTheme.typography.titleMedium)
+        BackupSection(backup, onExport, onReadBackup, onConfirmRestore, onDismissBackup)
+
         Text(stringResource(R.string.settings_about), style = MaterialTheme.typography.titleMedium)
         Text(stringResource(R.string.settings_version, BuildConfig.VERSION_NAME))
         UpdateSection(update, onCheckUpdate, onInstall)
+    }
+}
+
+@Composable
+private fun BackupSection(
+    state: BackupState,
+    onExport: (Uri) -> Unit,
+    onReadBackup: (Uri) -> Unit,
+    onConfirmRestore: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { it?.let(onExport) }
+    // Some file providers report .json as octet-stream, so do not filter by type.
+    val import = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(onReadBackup) }
+    val busy = state == BackupState.Working
+
+    Text(stringResource(R.string.backup_hint), style = MaterialTheme.typography.bodySmall)
+    Button(
+        onClick = { export.launch("sport-assistant-${LocalDate.now()}.json") },
+        enabled = !busy,
+        modifier = Modifier.fillMaxWidth(),
+    ) { Text(stringResource(R.string.backup_export)) }
+    OutlinedButton(onClick = { import.launch(arrayOf("*/*")) }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+        Text(stringResource(R.string.backup_restore))
+    }
+
+    when (state) {
+        BackupState.Working -> Text(stringResource(R.string.backup_working), style = MaterialTheme.typography.bodyMedium)
+        BackupState.Exported -> Text(stringResource(R.string.backup_exported), style = MaterialTheme.typography.bodyMedium)
+        BackupState.Restored -> Text(stringResource(R.string.backup_restored), style = MaterialTheme.typography.bodyMedium)
+        is BackupState.Failed -> Text(
+            stringResource(
+                when (state.reason) {
+                    BackupFailure.READ -> R.string.backup_err_read
+                    BackupFailure.WRITE -> R.string.backup_err_write
+                    BackupFailure.NOT_A_BACKUP -> R.string.backup_err_not_backup
+                    BackupFailure.NEWER_VERSION -> R.string.backup_err_newer
+                    BackupFailure.CORRUPT -> R.string.backup_err_corrupt
+                    BackupFailure.TOO_LARGE -> R.string.backup_err_large
+                },
+            ),
+            color = MaterialTheme.colorScheme.error,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        else -> Unit
+    }
+
+    if (state is BackupState.Preview) {
+        val d = state.data
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = { Text(stringResource(R.string.backup_confirm_title)) },
+            text = { Text(stringResource(R.string.backup_confirm_text, d.logs.size, d.walks.size, d.food.size, d.observations.size)) },
+            confirmButton = { TextButton(onClick = onConfirmRestore) { Text(stringResource(R.string.backup_confirm_ok)) } },
+            dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.food_cancel)) } },
+        )
     }
 }
 

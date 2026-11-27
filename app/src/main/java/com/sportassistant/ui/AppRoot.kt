@@ -153,6 +153,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
             }
             composable("settings") {
                 val update by vm.update.collectAsState()
+                val backup by vm.backup.collectAsState()
                 SettingsScreen(
                     profile,
                     update,
@@ -160,6 +161,11 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                     onRedo = { vm.saveProfile(profile.copy(onboarded = false)) },
                     onCheckUpdate = vm::checkForUpdate,
                     onInstall = vm::installUpdate,
+                    backup = backup,
+                    onExport = vm::exportTo,
+                    onReadBackup = vm::readBackup,
+                    onConfirmRestore = vm::confirmRestore,
+                    onDismissBackup = vm::dismissBackup,
                 )
             }
             composable("exercise/{id}") { entry ->

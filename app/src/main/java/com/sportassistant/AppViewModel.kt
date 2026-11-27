@@ -5,6 +5,12 @@ import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import android.net.Uri
+import androidx.room.withTransaction
+import com.sportassistant.backup.BackupCodec
+import com.sportassistant.backup.BackupData
+import com.sportassistant.backup.BackupError
+import com.sportassistant.backup.BackupException
+import java.io.IOException
 import com.sportassistant.ai.AnalysisError
 import com.sportassistant.ai.AnalysisResult
 import com.sportassistant.ai.FoodAnalyzer
@@ -77,6 +83,19 @@ sealed interface FoodAnalysisState {
     data class Review(val items: List<FoodItem>) : FoodAnalysisState
     data object NoFood : FoodAnalysisState
     data class Failed(val error: AnalysisError) : FoodAnalysisState
+}
+
+const val MAX_BACKUP_BYTES = 20 * 1024 * 1024
+
+enum class BackupFailure { READ, WRITE, NOT_A_BACKUP, NEWER_VERSION, CORRUPT, TOO_LARGE }
+
+sealed interface BackupState {
+    data object Idle : BackupState
+    data object Working : BackupState
+    data object Exported : BackupState
+    data class Preview(val data: BackupData) : BackupState
+    data object Restored : BackupState
+    data class Failed(val reason: BackupFailure) : BackupState
 }
 
 sealed interface EstimateState {
@@ -258,6 +277,102 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                     photoPath = path,
                 ),
             )
+        }
+    }
+
+    // --- Backup and restore ------------------------------------------------------------------
+
+    private val _backup = MutableStateFlow<BackupState>(BackupState.Idle)
+    val backup: StateFlow<BackupState> = _backup.asStateFlow()
+
+    fun dismissBackup() {
+        _backup.value = BackupState.Idle
+    }
+
+    /** Writes every record to [uri], a file the user picked (Downloads, Drive, ...). */
+    fun exportTo(uri: Uri) {
+        _backup.value = BackupState.Working
+        viewModelScope.launch(Dispatchers.IO) {
+            _backup.value = try {
+                val data = BackupData(
+                    profile = profile.value ?: Profile(),
+                    logs = dao.all(),
+                    walks = walkDao.all(),
+                    food = foodDao.all(),
+                    observations = obsDao.all(),
+                )
+                val text = BackupCodec.encode(data, java.time.LocalDateTime.now().toString())
+                getApplication<Application>().contentResolver.openOutputStream(uri, "wt")?.use { it.write(text.toByteArray()) }
+                    ?: throw IOException("cannot open the destination")
+                BackupState.Exported
+            } catch (e: IOException) {
+                BackupState.Failed(BackupFailure.WRITE)
+            }
+        }
+    }
+
+    /** Reads and validates a backup file, then waits for the user to confirm before touching any data. */
+    fun readBackup(uri: Uri) {
+        _backup.value = BackupState.Working
+        viewModelScope.launch(Dispatchers.IO) {
+            _backup.value = try {
+                val bytes = getApplication<Application>().contentResolver.openInputStream(uri)?.use { input ->
+                    // Stop one byte past the limit: enough to know the file is too large without loading it all.
+                    val out = java.io.ByteArrayOutputStream()
+                    val buf = ByteArray(8 * 1024)
+                    while (out.size() <= MAX_BACKUP_BYTES) {
+                        val n = input.read(buf)
+                        if (n < 0) break
+                        out.write(buf, 0, n)
+                    }
+                    out.toByteArray()
+                } ?: throw IOException("cannot open the file")
+                if (bytes.size > MAX_BACKUP_BYTES) {
+                    BackupState.Failed(BackupFailure.TOO_LARGE)
+                } else {
+                    BackupState.Preview(BackupCodec.decode(String(bytes)))
+                }
+            } catch (e: BackupException) {
+                BackupState.Failed(
+                    when (e.error) {
+                        BackupError.NOT_A_BACKUP -> BackupFailure.NOT_A_BACKUP
+                        BackupError.NEWER_VERSION -> BackupFailure.NEWER_VERSION
+                        BackupError.CORRUPT -> BackupFailure.CORRUPT
+                    },
+                )
+            } catch (e: IOException) {
+                BackupState.Failed(BackupFailure.READ)
+            }
+        }
+    }
+
+    /** Replaces everything on this phone with the previewed backup, in one transaction. */
+    fun confirmRestore() {
+        val preview = _backup.value as? BackupState.Preview ?: return
+        _backup.value = BackupState.Working
+        viewModelScope.launch(Dispatchers.IO) {
+            _backup.value = try {
+                val oldPhotos = obsDao.all().mapNotNull { it.photoPath }
+                val data = preview.data
+                db.withTransaction {
+                    dao.deleteAll(); dao.insertAll(data.logs.map { it.copy(id = 0) })
+                    walkDao.deleteAll(); walkDao.insertAll(data.walks.map { it.copy(id = 0) })
+                    foodDao.deleteAll(); foodDao.insertAll(data.food.map { it.copy(id = 0) })
+                    obsDao.deleteAll(); obsDao.insertAll(data.observations.map { it.copy(id = 0, photoPath = null) })
+                }
+                // The old rows are gone, so their photos would be orphans.
+                oldPhotos.forEach { File(it).delete() }
+
+                val current = profile.value ?: Profile()
+                val restored = data.profile.copy(onboarded = true, geminiKey = current.geminiKey)
+                store.save(restored)
+                Reminders.sync(getApplication(), restored)
+                BackupState.Restored
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                BackupState.Failed(BackupFailure.WRITE)
+            }
         }
     }
 
