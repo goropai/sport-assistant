@@ -63,6 +63,26 @@ class BackupCodecTest {
     }
 
     @Test
+    fun `the meal of a food entry round trips`() {
+        val dinner = data.copy(food = listOf(data.food.single().copy(meal = "DINNER")))
+        assertEquals("DINNER", roundTrip(dinner).food.single().meal)
+    }
+
+    @Test
+    fun `food entries from before meals existed become snacks`() {
+        val old = """{"app":"sport-assistant","version":1,"profile":{},"food":[
+            {"epochDay":1,"loggedAt":2,"name":"Чай","grams":200,"kcal":2,"proteinG":0,"fatG":0,"carbsG":0}]}"""
+        assertEquals("SNACK", BackupCodec.decode(old).food.single().meal)
+    }
+
+    @Test
+    fun `an unknown stored meal becomes a snack instead of failing`() {
+        val text = """{"app":"sport-assistant","version":1,"profile":{},"food":[
+            {"epochDay":1,"loggedAt":2,"name":"X","grams":1,"kcal":1,"proteinG":0,"fatG":0,"carbsG":0,"meal":"BRUNCH"}]}"""
+        assertEquals("SNACK", BackupCodec.decode(text).food.single().meal)
+    }
+
+    @Test
     fun `custom reminder timing round trips`() {
         val custom = profile.copy(
             moveEveryMin = 45, waterEveryMin = 120, dayStartMin = 7 * 60 + 30, dayEndMin = 21 * 60,

@@ -81,6 +81,8 @@ data class FoodEntry(
     val proteinG: Int,
     val fatG: Int,
     val carbsG: Int,
+    /** A [Meal] name. Entries from before meals existed read as snacks (the migration default). */
+    val meal: String = Meal.SNACK.name,
 )
 
 data class DayKcal(val epochDay: Long, val kcal: Int)
@@ -153,6 +155,13 @@ interface ObservationDao {
     suspend fun deleteAll()
 }
 
+private val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // Existing entries become snacks: there is no way to know which meal they were.
+        db.execSQL("ALTER TABLE `food_entry` ADD COLUMN `meal` TEXT NOT NULL DEFAULT 'SNACK'")
+    }
+}
+
 private val MIGRATION_3_4 = object : Migration(3, 4) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -184,7 +193,7 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
-@Database(entities = [WorkoutLog::class, Walk::class, FoodEntry::class, Observation::class], version = 4, exportSchema = false)
+@Database(entities = [WorkoutLog::class, Walk::class, FoodEntry::class, Observation::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun observationDao(): ObservationDao
     abstract fun logDao(): WorkoutLogDao
@@ -196,7 +205,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun get(context: Context): AppDatabase = instance ?: synchronized(this) {
             instance ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "app.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                 .build()
                 .also { instance = it }
         }

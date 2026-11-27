@@ -68,7 +68,16 @@
     <string name="food_ai_notfound">Could not find nutrition data for this name. Enter the calories by hand.</string>
     <string name="food_frequent">Frequent foods</string>
     <string name="food_edit_title">Edit entry</string>
-    <string name="food_tap_to_edit">Tap an entry to edit it.</string>    <string name="food_delete">Delete</string>
+    <string name="food_tap_to_edit">Tap an entry to edit it.</string>    <string name="meal_breakfast">Breakfast</string>
+    <string name="meal_lunch">Lunch</string>
+    <string name="meal_dinner">Dinner</string>
+    <string name="meal_snack">Snack</string>
+    <string name="food_meal_label">Meal</string>
+    <string name="food_meal_total">%1$s · %2$d kcal</string>
+    <string name="food_product_n">Food %1$d</string>
+    <string name="food_remove_row">Remove this food</string>
+    <string name="food_add_another">Add another food</string>
+    <string name="food_add_n">Add (%1$d)</string>    <string name="food_delete">Delete</string>
     <string name="food_not_configured">Photo analysis needs your Gemini API key (Settings). You can add food manually meanwhile.</string>
     <string name="settings_ai">AI food analysis</string>
     <string name="settings_ai_hint">Enter your own Gemini API key (free to create in Google AI Studio). Photos are sent directly to Google for analysis; the key is stored only on this phone.</string>

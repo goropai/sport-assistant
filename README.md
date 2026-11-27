@@ -45,6 +45,10 @@ Gemini key are never included.
 Food diary conveniences: tap a saved entry to edit it (calories follow the weight unless overridden), and
 the foods eaten most often are offered as one-tap chips when adding manually (`FoodHistory`).
 
+Meals: every food entry belongs to breakfast, lunch, dinner or a snack. The add-food form picks the
+meal expected at this hour if it is not logged yet today, otherwise a snack (`MealPicker`); several
+foods can be added at once with "+", and the diary is grouped by meal with a total for each.
+
 Reminders (Settings): movement and water at a chosen interval inside chosen active hours (optionally
 weekdays only), teeth at two chosen times. Each reminder is a one-off WorkManager job that schedules the
 next one from a pure, tested rule (`reminders/Schedule`); changes apply immediately and a reminder that

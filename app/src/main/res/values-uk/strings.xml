@@ -68,7 +68,16 @@
     <string name="food_ai_notfound">Не вдалося знайти поживність для цієї назви. Введіть калорії вручну.</string>
     <string name="food_frequent">Часті продукти</string>
     <string name="food_edit_title">Редагувати запис</string>
-    <string name="food_tap_to_edit">Торкніться запису, щоб його змінити.</string>    <string name="food_delete">Видалити</string>
+    <string name="food_tap_to_edit">Торкніться запису, щоб його змінити.</string>    <string name="meal_breakfast">Сніданок</string>
+    <string name="meal_lunch">Обід</string>
+    <string name="meal_dinner">Вечеря</string>
+    <string name="meal_snack">Перекус</string>
+    <string name="food_meal_label">Прийом їжі</string>
+    <string name="food_meal_total">%1$s · %2$d ккал</string>
+    <string name="food_product_n">Продукт %1$d</string>
+    <string name="food_remove_row">Прибрати цей продукт</string>
+    <string name="food_add_another">Додати ще продукт</string>
+    <string name="food_add_n">Додати (%1$d)</string>    <string name="food_delete">Видалити</string>
     <string name="food_not_configured">Для аналізу фото потрібен ваш ключ Gemini API (Налаштування). Поки що можна додавати їжу вручну.</string>
     <string name="settings_ai">ШІ-аналіз їжі</string>
     <string name="settings_ai_hint">Введіть власний ключ Gemini API (безкоштовно створюється в Google AI Studio). Фото надсилаються напряму до Google на аналіз; ключ зберігається лише на цьому телефоні.</string>

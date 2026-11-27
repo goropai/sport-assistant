@@ -28,6 +28,7 @@ import com.sportassistant.data.AppDatabase
 import com.sportassistant.data.DayHealth
 import com.sportassistant.data.FoodEntry
 import com.sportassistant.data.FoodHistory
+import com.sportassistant.data.Meal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -213,12 +214,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         _estimate.value = EstimateState.Idle
     }
 
-    fun saveFood(items: List<FoodItem>) {
+    fun saveFood(items: List<FoodItem>, meal: Meal) {
+        if (items.isEmpty()) return
         val now = System.currentTimeMillis()
         val day = LocalDate.now().toEpochDay()
         viewModelScope.launch {
             foodDao.insertAll(
-                items.map { FoodEntry(epochDay = day, loggedAt = now, name = it.name, grams = it.grams, kcal = it.kcal, proteinG = it.proteinG, fatG = it.fatG, carbsG = it.carbsG) },
+                items.map {
+                    FoodEntry(
+                        epochDay = day, loggedAt = now, name = it.name, grams = it.grams, kcal = it.kcal,
+                        proteinG = it.proteinG, fatG = it.fatG, carbsG = it.carbsG, meal = meal.name,
+                    )
+                },
             )
         }
         _analysis.value = FoodAnalysisState.Idle

@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessibilityNew
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.BarChart
@@ -72,6 +73,7 @@ object AppIcons {
     val Recalculate = Icons.Rounded.Refresh
     val Delete = Icons.Rounded.Close
     val Add = Icons.Rounded.Add
+    val Dropdown = Icons.Rounded.ArrowDropDown
     val Remove = Icons.Rounded.Remove
     val Library = Icons.Rounded.MenuBook
     val Nose = Icons.Rounded.Face

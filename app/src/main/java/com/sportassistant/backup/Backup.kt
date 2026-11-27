@@ -2,6 +2,7 @@ package com.sportassistant.backup
 
 import com.sportassistant.data.Complaint
 import com.sportassistant.data.MIN_REMINDER_INTERVAL
+import com.sportassistant.data.Meal
 import com.sportassistant.data.FoodEntry
 import com.sportassistant.data.Observation
 import com.sportassistant.data.Profile
@@ -44,6 +45,7 @@ object BackupCodec {
         .put("food", array(data.food) {
             JSONObject().put("epochDay", it.epochDay).put("loggedAt", it.loggedAt).put("name", it.name).put("grams", it.grams)
                 .put("kcal", it.kcal).put("proteinG", it.proteinG).put("fatG", it.fatG).put("carbsG", it.carbsG)
+                .put("meal", it.meal)
         })
         .put("observations", array(data.observations) {
             JSONObject().put("epochDay", it.epochDay).put("type", it.type).put("summary", it.summary).put("details", it.details)
@@ -80,6 +82,8 @@ object BackupCodec {
                     FoodEntry(
                         epochDay = it.getLong("epochDay"), loggedAt = it.getLong("loggedAt"), name = it.getString("name"), grams = it.getInt("grams"),
                         kcal = it.getInt("kcal"), proteinG = it.getInt("proteinG"), fatG = it.getInt("fatG"), carbsG = it.getInt("carbsG"),
+                        // Backups from before meals existed have no field: those entries are snacks.
+                        meal = Meal.of(it.optString("meal", Meal.SNACK.name)).name,
                     )
                 },
                 observations = records(root, "observations") {
