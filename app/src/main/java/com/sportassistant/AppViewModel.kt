@@ -10,6 +10,8 @@ import com.sportassistant.ai.AnalysisResult
 import com.sportassistant.ai.FoodAnalyzer
 import com.sportassistant.ai.FoodItem
 import com.sportassistant.ai.GeminiClient
+import com.sportassistant.ai.NutritionLookup
+import com.sportassistant.data.Per100
 import com.sportassistant.ai.ObservationAnalyzer
 import com.sportassistant.ai.ObservationOutcome
 import com.sportassistant.ai.ObservationResult
@@ -76,6 +78,14 @@ sealed interface FoodAnalysisState {
     data class Failed(val error: AnalysisError) : FoodAnalysisState
 }
 
+sealed interface EstimateState {
+    data object Idle : EstimateState
+    data object Loading : EstimateState
+    data class Done(val per100: Per100) : EstimateState
+    data object NotFound : EstimateState
+    data class Failed(val error: AnalysisError) : EstimateState
+}
+
 sealed interface ObservationState {
     data object Idle : ObservationState
     data object Analyzing : ObservationState
@@ -140,6 +150,39 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun dismissAnalysis() {
         _analysis.value = FoodAnalysisState.Idle
+    }
+
+    private val _estimate = MutableStateFlow<EstimateState>(EstimateState.Idle)
+    val estimate: StateFlow<EstimateState> = _estimate.asStateFlow()
+
+    /** Asks Gemini for per-100 g nutrition of a food that is not in the offline table. */
+    fun estimateNutrition(name: String) {
+        val key = profile.value?.geminiKey.orEmpty()
+        if (key.isBlank() || name.isBlank()) return
+        _estimate.value = EstimateState.Loading
+        viewModelScope.launch {
+            val lang = if (Locale.getDefault().language == "uk") "uk" else "en"
+            _estimate.value = try {
+                when (val r = NutritionLookup.lookup(key, name, lang)) {
+                    is AnalysisResult.Success -> {
+                        val item = r.items.first()
+                        // The prompt asks for 100 g, but normalise in case the model returned another weight.
+                        val k = if (item.grams > 0) 100.0 / item.grams else 1.0
+                        EstimateState.Done(Per100(item.kcal * k, item.proteinG * k, item.fatG * k, item.carbsG * k))
+                    }
+                    AnalysisResult.NoFood -> EstimateState.NotFound
+                    is AnalysisResult.Failure -> EstimateState.Failed(r.error)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                EstimateState.Failed(AnalysisError.BAD_RESPONSE)
+            }
+        }
+    }
+
+    fun clearEstimate() {
+        _estimate.value = EstimateState.Idle
     }
 
     fun saveFood(items: List<FoodItem>) {

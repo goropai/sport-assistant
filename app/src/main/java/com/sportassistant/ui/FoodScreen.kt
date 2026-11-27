@@ -8,6 +8,8 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,9 +24,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,16 +44,21 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.sportassistant.EstimateState
 import com.sportassistant.FoodAnalysisState
 import com.sportassistant.R
 import com.sportassistant.ai.AnalysisError
 import com.sportassistant.ai.FoodItem
 import com.sportassistant.data.Energy
+import com.sportassistant.data.FoodDb
+import com.sportassistant.data.Per100
 import com.sportassistant.data.FoodEntry
 import com.sportassistant.data.Profile
 import com.sportassistant.health.HealthUiState
 import java.io.File
 import java.time.LocalTime
+import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun FoodScreen(
@@ -57,10 +67,13 @@ fun FoodScreen(
     health: HealthUiState,
     walkKcalToday: Int,
     analysis: FoodAnalysisState,
+    estimate: EstimateState,
     onPhoto: (Uri) -> Unit,
     onSave: (List<FoodItem>) -> Unit,
     onDismiss: () -> Unit,
     onDelete: (Long) -> Unit,
+    onEstimate: (String) -> Unit,
+    onEstimateHandled: () -> Unit,
 ) {
     val context = LocalContext.current
     var showManual by rememberSaveable { mutableStateOf(false) }
@@ -119,7 +132,15 @@ fun FoodScreen(
             is FoodAnalysisState.Failed -> item { Notice(stringResource(errorText(analysis.error)), onDismiss) }
         }
 
-        if (showManual) item { ManualCard { onSave(listOf(it)); showManual = false } }
+        if (showManual) item {
+            ManualCard(
+                aiConfigured = aiConfigured,
+                estimate = estimate,
+                onEstimate = onEstimate,
+                onEstimateHandled = onEstimateHandled,
+                onAdd = { onSave(listOf(it)); showManual = false },
+            )
+        }
 
         item { Text(stringResource(R.string.food_today_entries), style = MaterialTheme.typography.titleMedium) }
         if (entries.isEmpty()) item { Text(stringResource(R.string.food_empty)) }
@@ -230,25 +251,139 @@ private fun ReviewCard(items: List<FoodItem>, onSave: (List<FoodItem>) -> Unit, 
     }
 }
 
+private val Per100Saver = listSaver<Per100?, Double>(
+    save = { p -> if (p == null) emptyList() else listOf(p.kcal, p.proteinG, p.fatG, p.carbsG) },
+    restore = { l -> if (l.size == 4) Per100(l[0], l[1], l[2], l[3]) else null },
+)
+
+/**
+ * Manual entry with automatic calories: pick a food from the offline table (or ask the AI), enter the
+ * weight, and kcal is calculated. The kcal field stays editable; a manual value overrides the calculation.
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ManualCard(onAdd: (FoodItem) -> Unit) {
+private fun ManualCard(
+    aiConfigured: Boolean,
+    estimate: EstimateState,
+    onEstimate: (String) -> Unit,
+    onEstimateHandled: () -> Unit,
+    onAdd: (FoodItem) -> Unit,
+) {
+    val lang = if (Locale.getDefault().language == "uk") "uk" else "en"
     var name by rememberSaveable { mutableStateOf("") }
-    var kcal by rememberSaveable { mutableStateOf("") }
     var grams by rememberSaveable { mutableStateOf("") }
+    var kcalOverride by rememberSaveable { mutableStateOf<String?>(null) }
+    // Per-100 g values come from a table match or an AI lookup.
+    var per by rememberSaveable(stateSaver = Per100Saver) { mutableStateOf<Per100?>(null) }
+
+    LaunchedEffect(estimate) {
+        if (estimate is EstimateState.Done) {
+            per = estimate.per100
+            kcalOverride = null
+            if (grams.isBlank()) grams = "100"
+            onEstimateHandled()
+        }
+    }
+
+    val g = grams.toIntOrNull() ?: 0
+    val auto = per?.takeIf { g > 0 }?.kcalFor(g)
+    val kcalText = kcalOverride ?: auto?.toString().orEmpty()
+    val kcal = kcalText.toIntOrNull() ?: 0
     val numeric = KeyboardOptions(keyboardType = KeyboardType.Number)
+
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(name, { name = it.take(80) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.food_name)) }, singleLine = true)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(kcal, { kcal = it.filter(Char::isDigit).take(4) }, Modifier.weight(1f), label = { Text(stringResource(R.string.food_kcal_label)) }, singleLine = true, keyboardOptions = numeric)
-                OutlinedTextField(grams, { grams = it.filter(Char::isDigit).take(4) }, Modifier.weight(1f), label = { Text(stringResource(R.string.food_grams)) }, singleLine = true, keyboardOptions = numeric)
+            OutlinedTextField(
+                name,
+                {
+                    name = it.take(80)
+                    per = null // a different name means a different food
+                    kcalOverride = null
+                    if (estimate != EstimateState.Idle) onEstimateHandled()
+                },
+                Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.food_name)) },
+                singleLine = true,
+            )
+
+            val suggestions = if (per == null) FoodDb.search(name, lang) else emptyList()
+            if (suggestions.isNotEmpty()) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    suggestions.forEach { food ->
+                        SuggestionChip(
+                            onClick = {
+                                name = food.name(lang)
+                                per = food.per100
+                                kcalOverride = null
+                                if (grams.isBlank()) grams = food.portionG.toString()
+                            },
+                            label = { Text(stringResource(R.string.food_suggestion, food.name(lang), food.per100.kcal.roundToInt())) },
+                        )
+                    }
+                }
             }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    grams, { grams = it.filter(Char::isDigit).take(4) }, Modifier.weight(1f),
+                    label = { Text(stringResource(R.string.food_grams)) }, singleLine = true, keyboardOptions = numeric,
+                )
+                OutlinedTextField(
+                    kcalText, { kcalOverride = it.filter(Char::isDigit).take(4) }, Modifier.weight(1f),
+                    label = { Text(stringResource(R.string.food_kcal_label)) }, singleLine = true, keyboardOptions = numeric,
+                )
+            }
+
+            per?.let { p ->
+                Text(
+                    stringResource(R.string.food_per100_info, p.kcal.roundToInt(), p.proteinG.roundToInt(), p.fatG.roundToInt(), p.carbsG.roundToInt()),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                if (kcalOverride != null) {
+                    TextButton(onClick = { kcalOverride = null }) { Text(stringResource(R.string.food_kcal_reset)) }
+                } else if (auto != null) {
+                    // Spell the sum out so it is clear the total already uses the entered weight.
+                    Text(
+                        stringResource(R.string.food_calc_line, g, p.kcal.roundToInt(), auto),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                } else {
+                    Text(stringResource(R.string.food_kcal_auto), style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            if (per == null && name.isBlank()) {
+                Text(stringResource(R.string.food_manual_hint), style = MaterialTheme.typography.bodySmall)
+            }
+
+            if (per == null && aiConfigured && name.trim().length >= 2) {
+                when (estimate) {
+                    EstimateState.Loading -> Text(stringResource(R.string.food_ai_loading), style = MaterialTheme.typography.bodySmall)
+                    EstimateState.NotFound -> Text(stringResource(R.string.food_ai_notfound), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                    is EstimateState.Failed -> Text(stringResource(errorText(estimate.error)), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+                    else -> Unit
+                }
+                OutlinedButton(onClick = { onEstimate(name.trim()) }, enabled = estimate != EstimateState.Loading) {
+                    Text(stringResource(R.string.food_ai_estimate))
+                }
+            }
+
             Button(
                 onClick = {
-                    onAdd(FoodItem(name.trim(), grams.toIntOrNull() ?: 0, kcal.toInt(), 0, 0, 0))
-                    name = ""; kcal = ""; grams = ""
+                    val fromTable = kcalOverride == null && g > 0
+                    onAdd(
+                        FoodItem(
+                            name = name.trim(),
+                            grams = g,
+                            kcal = kcal,
+                            // Macros are only known when kcal was not overridden by hand.
+                            proteinG = if (fromTable) per?.proteinFor(g) ?: 0 else 0,
+                            fatG = if (fromTable) per?.fatFor(g) ?: 0 else 0,
+                            carbsG = if (fromTable) per?.carbsFor(g) ?: 0 else 0,
+                        ),
+                    )
+                    name = ""; grams = ""; kcalOverride = null; per = null
                 },
-                enabled = name.isNotBlank() && (kcal.toIntOrNull() ?: 0) > 0,
+                enabled = name.isNotBlank() && kcal > 0,
             ) { Text(stringResource(R.string.food_add)) }
         }
     }

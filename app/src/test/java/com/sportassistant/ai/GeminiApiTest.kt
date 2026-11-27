@@ -22,6 +22,21 @@ class GeminiApiTest {
     }
 
     @Test
+    fun `text-only request has no image part`() {
+        val req = JSONObject(GeminiApi.buildRequest(GeminiApi.nutritionPrompt("English"), "borscht", null))
+        val parts = req.getJSONArray("contents").getJSONObject(0).getJSONArray("parts")
+        assertEquals(1, parts.length())
+        assertEquals("borscht", parts.getJSONObject(0).getString("text"))
+    }
+
+    @Test
+    fun `nutrition prompt asks for per 100 g in the requested language`() {
+        val p = GeminiApi.nutritionPrompt("Ukrainian")
+        assertTrue(p.contains("per 100 g"))
+        assertTrue(p.contains("Ukrainian"))
+    }
+
+    @Test
     fun `extracts and joins text parts of the first candidate`() {
         val response = """{"candidates":[{"content":{"parts":[{"text":"{\"items\":"},{"text":"[]}"}]}}]}"""
         assertEquals("""{"items":[]}""", GeminiApi.extractText(response))

@@ -44,8 +44,13 @@ object GeminiClient {
         ByteArrayOutputStream().also { scaled.compress(Bitmap.CompressFormat.JPEG, JPEG_QUALITY, it) }.toByteArray()
     }
 
-    suspend fun generate(apiKey: String, systemPrompt: String, jpeg: ByteArray): GenResult = withContext(Dispatchers.IO) {
-        val body = GeminiApi.buildRequest(systemPrompt, "Analyze the photo.", Base64.encodeToString(jpeg, Base64.NO_WRAP))
+    suspend fun generate(
+        apiKey: String,
+        systemPrompt: String,
+        jpeg: ByteArray?,
+        userText: String = "Analyze the photo.",
+    ): GenResult = withContext(Dispatchers.IO) {
+        val body = GeminiApi.buildRequest(systemPrompt, userText, jpeg?.let { Base64.encodeToString(it, Base64.NO_WRAP) })
         try {
             val (code, text) = post(apiKey.trim(), body)
             when {

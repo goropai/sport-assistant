@@ -61,5 +61,7 @@ app sends a downscaled photo straight to the Gemini API (`gemini-3.8-flash`, see
 and asks for a JSON list of foods with portion weight, kcal and macros. You review and correct the
 estimate before it is saved; photos are never stored. The key lives only in the app's private
 storage on the phone and is never part of the APK or the repository. Without a key, food can still be
-added manually. The calorie balance is resting energy (Mifflin-St Jeor) + active energy from the
+added manually: typing a name suggests foods from a built-in offline table (~120 items, kcal and macros
+per 100 g, `FoodDb`), and calories are calculated from the entered weight. The kcal field stays
+editable, and with a key an unknown food can be looked up by the AI (per 100 g). The calorie balance is resting energy (Mifflin-St Jeor) + active energy from the
 watch (or tracked walks) versus eaten calories.

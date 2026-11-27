@@ -73,23 +73,25 @@ object GeminiApi {
             "grams is the estimated portion weight shown, kcal and macros are for that whole portion. " +
             "If the photo has no food, return {\"items\":[],\"confidence\":\"low\"}. Names in $languageName."
 
-    fun buildRequest(systemPrompt: String, userText: String, imageBase64: String): String = JSONObject()
-        .put("system_instruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt))))
-        .put(
-            "contents",
-            JSONArray().put(
-                JSONObject()
-                    .put("role", "user")
-                    .put(
-                        "parts",
-                        JSONArray()
-                            .put(JSONObject().put("text", userText))
-                            .put(JSONObject().put("inline_data", JSONObject().put("mime_type", "image/jpeg").put("data", imageBase64))),
-                    ),
-            ),
-        )
-        .put("generationConfig", JSONObject().put("responseMimeType", "application/json"))
-        .toString()
+    /** Typical nutrition of a named food per 100 g, for items missing from the offline table. */
+    fun nutritionPrompt(languageName: String) =
+        "You are a nutrition table. For the food or dish named by the user, give its typical nutrition per 100 g as it is " +
+            "usually eaten. Respond ONLY with JSON: " +
+            "{\"items\":[{\"name\":string,\"grams\":100,\"kcal\":number,\"protein_g\":number,\"fat_g\":number,\"carbs_g\":number}]}. " +
+            "If the text is not a food or drink, return {\"items\":[]}. Name in $languageName."
+
+    /** [imageBase64] is optional: text-only requests are used for nutrition lookups. */
+    fun buildRequest(systemPrompt: String, userText: String, imageBase64: String?): String {
+        val parts = JSONArray().put(JSONObject().put("text", userText))
+        if (imageBase64 != null) {
+            parts.put(JSONObject().put("inline_data", JSONObject().put("mime_type", "image/jpeg").put("data", imageBase64)))
+        }
+        return JSONObject()
+            .put("system_instruction", JSONObject().put("parts", JSONArray().put(JSONObject().put("text", systemPrompt))))
+            .put("contents", JSONArray().put(JSONObject().put("role", "user").put("parts", parts)))
+            .put("generationConfig", JSONObject().put("responseMimeType", "application/json"))
+            .toString()
+    }
 
     fun buildFoodRequest(imageBase64: String, languageName: String): String =
         buildRequest(foodPrompt(languageName), "Analyze the photo.", imageBase64)
@@ -112,6 +114,20 @@ object FoodAnalyzer {
             is GenResult.Failure -> AnalysisResult.Failure(r.error)
             is GenResult.Text -> try {
                 val items = FoodParser.parse(r.text)
+                if (items.isEmpty()) AnalysisResult.NoFood else AnalysisResult.Success(items)
+            } catch (e: IllegalArgumentException) {
+                AnalysisResult.Failure(AnalysisError.BAD_RESPONSE)
+            }
+        }
+}
+
+/** Looks up per-100 g nutrition for a food name with the user's Gemini key. */
+object NutritionLookup {
+    suspend fun lookup(apiKey: String, foodName: String, lang: String): AnalysisResult =
+        when (val r = GeminiClient.generate(apiKey, GeminiApi.nutritionPrompt(languageName(lang)), jpeg = null, userText = foodName.take(80))) {
+            is GenResult.Failure -> AnalysisResult.Failure(r.error)
+            is GenResult.Text -> try {
+                val items = FoodParser.parse(r.text).filter { it.kcal > 0 }
                 if (items.isEmpty()) AnalysisResult.NoFood else AnalysisResult.Success(items)
             } catch (e: IllegalArgumentException) {
                 AnalysisResult.Failure(AnalysisError.BAD_RESPONSE)

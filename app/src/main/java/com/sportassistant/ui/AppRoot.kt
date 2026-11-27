@@ -101,6 +101,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                 val health by vm.health.collectAsState()
                 val walks by vm.walks.collectAsState()
                 val analysis by vm.analysis.collectAsState()
+                val estimate by vm.estimate.collectAsState()
                 LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { vm.refreshHealth() }
                 val today = LocalDate.now().toEpochDay()
                 FoodScreen(
@@ -109,10 +110,13 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                     health,
                     walkKcalToday = walks.filter { it.epochDay == today }.sumOf { it.kcal },
                     analysis = analysis,
+                    estimate = estimate,
                     onPhoto = vm::analyzeFood,
                     onSave = vm::saveFood,
                     onDismiss = vm::dismissAnalysis,
                     onDelete = vm::deleteFood,
+                    onEstimate = vm::estimateNutrition,
+                    onEstimateHandled = vm::clearEstimate,
                 )
             }
             composable("walk") {
