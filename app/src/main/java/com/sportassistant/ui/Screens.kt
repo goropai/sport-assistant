@@ -118,26 +118,43 @@ fun LibraryScreen(onOpen: (Exercise) -> Unit) {
 }
 
 @Composable
-fun ExerciseDetailScreen(ex: Exercise, onBack: () -> Unit, onCamera: (Exercise) -> Unit) {
+fun ExerciseDetailScreen(ex: Exercise, onBack: () -> Unit, onCamera: (Exercise) -> Unit, onNose: (Exercise) -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedButton(onClick = onBack) { Text(stringResource(R.string.back)) }
         ExerciseVisual(ex)
         Text(stringResource(ex.name), style = MaterialTheme.typography.headlineMedium)
         Text("${stringResource(ex.category.label)} · ${exerciseDose(ex)}", style = MaterialTheme.typography.labelLarge)
         Text(stringResource(ex.steps), style = MaterialTheme.typography.bodyLarge)
-        if (RepTrackers.forExercise(ex.id) != null) CameraButton(ex, onCamera)
+        CountButtons(ex, onCamera, onNose)
     }
 }
 
+/** Ways to have reps counted automatically: by camera, and for push-ups also by nose touch. */
 @Composable
-private fun CameraButton(ex: Exercise, onCamera: (Exercise) -> Unit) {
-    OutlinedButton(onClick = { onCamera(ex) }, modifier = Modifier.fillMaxWidth()) {
-        Text("📷  ${stringResource(R.string.camera_count)}")
+private fun CountButtons(ex: Exercise, onCamera: (Exercise) -> Unit, onNose: (Exercise) -> Unit) {
+    if (RepTrackers.forExercise(ex.id) != null) {
+        OutlinedButton(onClick = { onCamera(ex) }, modifier = Modifier.fillMaxWidth()) {
+            Text("📷  ${stringResource(R.string.camera_count)}")
+        }
+    }
+    if (ex.id == NOSE_TOUCH_EXERCISE) {
+        OutlinedButton(onClick = { onNose(ex) }, modifier = Modifier.fillMaxWidth()) {
+            Text("👃  ${stringResource(R.string.nose_count)}")
+        }
     }
 }
 
+/** The one exercise where the nose can touch a phone lying on the floor. */
+const val NOSE_TOUCH_EXERCISE = "pushups"
+
 @Composable
-fun WorkoutScreen(plan: List<Exercise>, onFinish: (exercises: Int, seconds: Int) -> Int, onClose: () -> Unit, onCamera: (Exercise) -> Unit) {
+fun WorkoutScreen(
+    plan: List<Exercise>,
+    onFinish: (exercises: Int, seconds: Int) -> Int,
+    onClose: () -> Unit,
+    onCamera: (Exercise) -> Unit,
+    onNose: (Exercise) -> Unit,
+) {
     var index by rememberSaveable { mutableIntStateOf(0) }
     var awarded by rememberSaveable { mutableIntStateOf(-1) }
     var remaining by rememberSaveable { mutableIntStateOf(0) }
@@ -185,7 +202,7 @@ fun WorkoutScreen(plan: List<Exercise>, onFinish: (exercises: Int, seconds: Int)
             Text(exerciseDose(ex), style = MaterialTheme.typography.displaySmall)
         }
         Text(stringResource(ex.steps), modifier = Modifier.fillMaxWidth())
-        if (RepTrackers.forExercise(ex.id) != null) CameraButton(ex, onCamera)
+        CountButtons(ex, onCamera, onNose)
         Button(
             onClick = {
                 if (last) awarded = onFinish(plan.size, plan.sumOf { it.estimatedSeconds }) else index++

@@ -93,6 +93,12 @@
     <string name="obs_history">History</string>
     <string name="obs_empty">No saved checks yet.</string>
 
+    <!-- Nose-touch counting -->
+    <string name="nose_count">Count by nose touch</string>
+    <string name="nose_hold_to_finish">Hold to finish</string>
+    <string name="nose_instructions">Put the phone on the floor, screen up, under your face. At the bottom of each push-up touch the screen with your nose: every touch counts one repetition.</string>
+    <string name="nose_not_registering">Nothing counted? Some screen protectors or very dry skin do not register a nose touch. Try touching a bit more firmly, or use camera counting instead.</string>
+
     <!-- Backup -->
     <string name="backup_title">Backup</string>
     <string name="backup_hint">Save your history, walks, food diary and checks to a file (for example in Downloads or Drive) so they survive reinstalling the app. Photos and your Gemini key are not included.</string>

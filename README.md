@@ -18,6 +18,10 @@ detected skeleton drawn over the video, a live joint angle readout and a Strict/
 setting;
 GPS walk tracking (foreground service, offline route preview, distance/pace/kcal, history).
 
+Push-ups can also be counted by nose touch: the phone lies on the floor, screen up, and every touch
+of the screen is one repetition (`TouchRepCounter` ignores bursts closer than 0.7 s). It depends on
+the touchscreen registering a nose, which screen protectors can prevent.
+
 Watch data (Redmi Watch 5 Lite): read-only from Health Connect, where Mi Fitness writes steps, heart
 rate, sleep, active calories and distance. Shown on the Today screen.
 

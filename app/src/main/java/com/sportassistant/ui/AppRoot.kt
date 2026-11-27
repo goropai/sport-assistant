@@ -170,10 +170,27 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
             }
             composable("exercise/{id}") { entry ->
                 val ex = Exercises.byId(entry.arguments?.getString("id").orEmpty())
-                if (ex != null) ExerciseDetailScreen(ex, onBack = { nav.popBackStack() }, onCamera = { nav.navigate("camera/${it.id}") })
+                if (ex != null) {
+                    ExerciseDetailScreen(
+                        ex,
+                        onBack = { nav.popBackStack() },
+                        onCamera = { nav.navigate("camera/${it.id}") },
+                        onNose = { nav.navigate("nose/${it.id}") },
+                    )
+                }
             }
             composable("workout") {
-                WorkoutScreen(plan, onFinish = vm::logWorkout, onClose = { nav.popBackStack() }, onCamera = { nav.navigate("camera/${it.id}") })
+                WorkoutScreen(
+                    plan,
+                    onFinish = vm::logWorkout,
+                    onClose = { nav.popBackStack() },
+                    onCamera = { nav.navigate("camera/${it.id}") },
+                    onNose = { nav.navigate("nose/${it.id}") },
+                )
+            }
+            composable("nose/{id}") { entry ->
+                val ex = Exercises.byId(entry.arguments?.getString("id").orEmpty())
+                if (ex != null) NoseCountScreen(ex, onDone = { nav.popBackStack() })
             }
             composable("camera/{id}") { entry ->
                 val ex = Exercises.byId(entry.arguments?.getString("id").orEmpty())
