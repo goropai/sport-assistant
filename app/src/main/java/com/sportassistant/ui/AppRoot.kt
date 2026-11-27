@@ -121,7 +121,21 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                 WalkScreen(track, walks, profile.weightKg, onStart = vm::startWalk, onFinish = vm::finishWalk)
             }
             composable("library") { LibraryScreen(onOpen = { nav.navigate("exercise/${it.id}") }) }
-            composable("progress") { ProgressScreen(stats) }
+            composable("progress") { ProgressScreen(stats, onObservations = { nav.navigate("observations") }) }
+            composable("observations") {
+                val items by vm.observations.collectAsState()
+                val obsState by vm.obsState.collectAsState()
+                ObservationsScreen(
+                    profile,
+                    items,
+                    obsState,
+                    onPhoto = vm::analyzeObservation,
+                    onSave = vm::saveObservation,
+                    onDismiss = vm::dismissObservation,
+                    onDelete = vm::deleteObservation,
+                    onBack = { vm.dismissObservation(); nav.popBackStack() },
+                )
+            }
             composable("settings") {
                 val update by vm.update.collectAsState()
                 SettingsScreen(

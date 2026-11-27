@@ -128,7 +128,7 @@ fun FoodScreen(
     }
 }
 
-private fun errorText(e: AnalysisError): Int = when (e) {
+internal fun errorText(e: AnalysisError): Int = when (e) {
     AnalysisError.UNAUTHORIZED -> R.string.food_err_auth
     AnalysisError.RATE_LIMITED -> R.string.food_err_rate
     AnalysisError.UNAVAILABLE -> R.string.food_err_unavailable

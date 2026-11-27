@@ -9,6 +9,13 @@ import com.sportassistant.ai.AnalysisError
 import com.sportassistant.ai.AnalysisResult
 import com.sportassistant.ai.FoodAnalyzer
 import com.sportassistant.ai.FoodItem
+import com.sportassistant.ai.GeminiClient
+import com.sportassistant.ai.ObservationAnalyzer
+import com.sportassistant.ai.ObservationOutcome
+import com.sportassistant.ai.ObservationResult
+import com.sportassistant.ai.ObservationType
+import com.sportassistant.data.Observation
+import kotlinx.coroutines.Dispatchers
 import com.sportassistant.data.AppDatabase
 import com.sportassistant.data.FoodEntry
 import kotlinx.coroutines.CancellationException
@@ -69,6 +76,13 @@ sealed interface FoodAnalysisState {
     data class Failed(val error: AnalysisError) : FoodAnalysisState
 }
 
+sealed interface ObservationState {
+    data object Idle : ObservationState
+    data object Analyzing : ObservationState
+    data class Result(val type: ObservationType, val result: ObservationResult, val jpeg: ByteArray) : ObservationState
+    data class Failed(val error: AnalysisError) : ObservationState
+}
+
 class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val store = ProfileStore(app)
     private val db = AppDatabase.get(app)
@@ -109,7 +123,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             val ctx = getApplication<Application>()
             _analysis.value = try {
-                val jpeg = FoodAnalyzer.prepareJpeg(ctx, photo)
+                val jpeg = GeminiClient.prepareJpeg(ctx, photo)
                 val lang = if (Locale.getDefault().language == "uk") "uk" else "en"
                 when (val r = FoodAnalyzer.analyze(p.geminiKey, jpeg, lang)) {
                     is AnalysisResult.Success -> FoodAnalysisState.Review(r.items)
@@ -141,6 +155,73 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun deleteFood(id: Long) {
         viewModelScope.launch { foodDao.delete(id) }
+    }
+
+    // --- Posture / skin observations ---------------------------------------------------------
+
+    private val obsDao = db.observationDao()
+    val observations: StateFlow<List<Observation>> =
+        obsDao.observeAll().stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val _obs = MutableStateFlow<ObservationState>(ObservationState.Idle)
+    val obsState: StateFlow<ObservationState> = _obs.asStateFlow()
+
+    fun analyzeObservation(photo: Uri, type: ObservationType) {
+        val key = profile.value?.geminiKey.orEmpty()
+        _obs.value = ObservationState.Analyzing
+        viewModelScope.launch {
+            val ctx = getApplication<Application>()
+            _obs.value = try {
+                val jpeg = GeminiClient.prepareJpeg(ctx, photo)
+                val lang = if (Locale.getDefault().language == "uk") "uk" else "en"
+                when (val r = ObservationAnalyzer.analyze(key, type, jpeg, lang)) {
+                    is ObservationOutcome.Success -> ObservationState.Result(type, r.result, jpeg)
+                    is ObservationOutcome.Failure -> ObservationState.Failed(r.error)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                ObservationState.Failed(AnalysisError.BAD_RESPONSE)
+            }
+        }
+    }
+
+    fun dismissObservation() {
+        _obs.value = ObservationState.Idle
+    }
+
+    /** Saves the analysis; the photo is written to app-private storage only if [keepPhoto]. */
+    fun saveObservation(keepPhoto: Boolean) {
+        val s = _obs.value as? ObservationState.Result ?: return
+        _obs.value = ObservationState.Idle
+        viewModelScope.launch(Dispatchers.IO) {
+            var path: String? = null
+            if (keepPhoto) {
+                val dir = File(getApplication<Application>().filesDir, "observations").apply { mkdirs() }
+                val file = File(dir, "obs_${System.currentTimeMillis()}.jpg")
+                file.writeBytes(s.jpeg)
+                path = file.absolutePath
+            }
+            obsDao.insert(
+                Observation(
+                    epochDay = LocalDate.now().toEpochDay(),
+                    type = s.type.name,
+                    summary = s.result.summary,
+                    details = s.result.observations.joinToString("\n"),
+                    suggestions = s.result.suggestions.joinToString("\n"),
+                    seeDoctor = s.result.seeDoctor,
+                    doctorReason = s.result.doctorReason,
+                    photoPath = path,
+                ),
+            )
+        }
+    }
+
+    fun deleteObservation(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            obsDao.get(id)?.photoPath?.let { File(it).delete() }
+            obsDao.delete(id)
+        }
     }
 
     private val healthRepo = HealthRepository(app)

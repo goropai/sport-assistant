@@ -185,7 +185,7 @@ fun WorkoutScreen(plan: List<Exercise>, onFinish: (exercises: Int, seconds: Int)
 }
 
 @Composable
-fun ProgressScreen(stats: Stats) {
+fun ProgressScreen(stats: Stats, onObservations: () -> Unit) {
     val today = LocalDate.now()
     val badges = listOf(
         R.string.badge_first to (stats.workouts >= 1),
@@ -211,6 +211,7 @@ fun ProgressScreen(stats: Stats) {
                 }
             }
         }
+        OutlinedButton(onClick = onObservations, modifier = Modifier.fillMaxWidth()) { Text("🪞  ${stringResource(R.string.obs_title)}") }
         Text(stringResource(R.string.progress_badges), style = MaterialTheme.typography.titleMedium)
         badges.forEach { (label, earned) ->
             Text("${if (earned) "🏅" else "🔒"}  ${stringResource(label)}", color = if (earned) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline)

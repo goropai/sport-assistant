@@ -67,6 +67,23 @@
     <string name="sex_female">Female</string>
     <string name="sex_unspecified">Prefer not to say</string>
 
+    <!-- Posture / skin observations -->
+    <string name="obs_title">Posture and skin check</string>
+    <string name="obs_disclaimer">Wellness observations only, not a diagnosis. A phone photo cannot replace an examination, and the AI can be wrong. If something worries you, see a doctor.</string>
+    <string name="obs_type_posture">Posture</string>
+    <string name="obs_type_skin">Skin</string>
+    <string name="obs_tip_posture">Stand relaxed, full body in frame, phone at chest height, from the side or the back. Use the same spot and clothing each time to compare progress.</string>
+    <string name="obs_tip_skin">Natural daylight, in focus, one area at a time. Skin photos are not kept unless you tick the box.</string>
+    <string name="obs_not_configured">Needs your Gemini API key (Settings).</string>
+    <string name="obs_result_title">What the photo shows</string>
+    <string name="obs_suggestions">Suggestions</string>
+    <string name="obs_see_doctor">Consider seeing a doctor</string>
+    <string name="obs_keep_photo">Keep the photo on this phone to compare progress</string>
+    <string name="obs_discard">Discard</string>
+    <string name="obs_compare">First vs latest</string>
+    <string name="obs_history">History</string>
+    <string name="obs_empty">No saved checks yet.</string>
+
     <!-- Watch / Health Connect -->
     <string name="health_title">From your watch</string>
     <string name="health_loading">Loading…</string>

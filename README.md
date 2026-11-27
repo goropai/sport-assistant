@@ -23,7 +23,11 @@ Toolchain: AGP 9.5, Gradle 9.9, Kotlin 2.4, compileSdk 37.1.
 
 Food diary with photo analysis and calorie balance (see below).
 
-Not yet: photo-based observations (posture/skin), exercise illustrations (emoji placeholders for now).
+Posture and skin check (Progress tab): cautious photo observations from Gemini with a "see a doctor"
+flag, a saved history and a first-vs-latest photo comparison. Wellness only, never a diagnosis; skin
+photos are kept only if the user opts in.
+
+Not yet: video analysis, exercise illustrations (emoji placeholders for now).
 
 ## Updates
 

@@ -76,6 +76,47 @@ interface FoodDao {
     fun observeDay(day: Long): Flow<List<FoodEntry>>
 }
 
+/** A saved posture/skin photo analysis. [photoPath] is an app-private file, null if the user chose not to keep it. */
+@Entity(tableName = "observation")
+data class Observation(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val epochDay: Long,
+    val type: String,
+    val summary: String,
+    /** Observations, one per line. */
+    val details: String,
+    /** Suggestions, one per line. */
+    val suggestions: String,
+    val seeDoctor: Boolean,
+    val doctorReason: String,
+    val photoPath: String?,
+)
+
+@Dao
+interface ObservationDao {
+    @Insert
+    suspend fun insert(o: Observation)
+
+    @Query("SELECT * FROM observation WHERE id = :id")
+    suspend fun get(id: Long): Observation?
+
+    @Query("DELETE FROM observation WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("SELECT * FROM observation ORDER BY id DESC")
+    fun observeAll(): Flow<List<Observation>>
+}
+
+private val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `observation` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`epochDay` INTEGER NOT NULL, `type` TEXT NOT NULL, `summary` TEXT NOT NULL, `details` TEXT NOT NULL, " +
+                "`suggestions` TEXT NOT NULL, `seeDoctor` INTEGER NOT NULL, `doctorReason` TEXT NOT NULL, `photoPath` TEXT)",
+        )
+    }
+}
+
 private val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -97,8 +138,9 @@ private val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
-@Database(entities = [WorkoutLog::class, Walk::class, FoodEntry::class], version = 3, exportSchema = false)
+@Database(entities = [WorkoutLog::class, Walk::class, FoodEntry::class, Observation::class], version = 4, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun observationDao(): ObservationDao
     abstract fun logDao(): WorkoutLogDao
     abstract fun walkDao(): WalkDao
     abstract fun foodDao(): FoodDao
@@ -108,7 +150,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         fun get(context: Context): AppDatabase = instance ?: synchronized(this) {
             instance ?: Room.databaseBuilder(context.applicationContext, AppDatabase::class.java, "app.db")
-                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                 .build()
                 .also { instance = it }
         }

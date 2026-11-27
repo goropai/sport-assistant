@@ -67,6 +67,23 @@
     <string name="sex_female">Жіноча</string>
     <string name="sex_unspecified">Не вказувати</string>
 
+    <!-- Posture / skin observations -->
+    <string name="obs_title">Перевірка постави та шкіри</string>
+    <string name="obs_disclaimer">Лише спостереження для оздоровлення, а не діагноз. Фото з телефона не замінює огляд, а ШІ може помилятися. Якщо щось турбує, зверніться до лікаря.</string>
+    <string name="obs_type_posture">Постава</string>
+    <string name="obs_type_skin">Шкіра</string>
+    <string name="obs_tip_posture">Стійте невимушено, усе тіло в кадрі, телефон на рівні грудей, збоку або ззаду. Знімайте в тому самому місці й одязі, щоб порівнювати прогрес.</string>
+    <string name="obs_tip_skin">Природне денне світло, у фокусі, одна ділянка за раз. Фото шкіри не зберігаються, поки ви не поставите галочку.</string>
+    <string name="obs_not_configured">Потрібен ваш ключ Gemini API (Налаштування).</string>
+    <string name="obs_result_title">Що показує фото</string>
+    <string name="obs_suggestions">Поради</string>
+    <string name="obs_see_doctor">Варто звернутися до лікаря</string>
+    <string name="obs_keep_photo">Зберегти фото на цьому телефоні для порівняння прогресу</string>
+    <string name="obs_discard">Відхилити</string>
+    <string name="obs_compare">Перше й останнє</string>
+    <string name="obs_history">Історія</string>
+    <string name="obs_empty">Збережених перевірок ще немає.</string>
+
     <!-- Watch / Health Connect -->
     <string name="health_title">З годинника</string>
     <string name="health_loading">Завантаження…</string>
