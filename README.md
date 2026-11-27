@@ -42,6 +42,9 @@ Backup (Settings): export everything to one JSON file via the system file picker
 after confirmation (`backup/BackupCodec`, replaces the data in a single transaction). Photos and the
 Gemini key are never included.
 
+Food diary conveniences: tap a saved entry to edit it (calories follow the weight unless overridden), and
+the foods eaten most often are offered as one-tap chips when adding manually (`FoodHistory`).
+
 Reminders (Settings): movement and water at a chosen interval inside chosen active hours (optionally
 weekdays only), teeth at two chosen times. Each reminder is a one-off WorkManager job that schedules the
 next one from a pure, tested rule (`reminders/Schedule`); changes apply immediately and a reminder that

@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
@@ -91,6 +92,13 @@ interface FoodDao {
 
     @Query("DELETE FROM food_entry WHERE id = :id")
     suspend fun delete(id: Long)
+
+    @Update
+    suspend fun update(entry: FoodEntry)
+
+    /** Most recent entries, the raw material for the "frequent foods" suggestions. */
+    @Query("SELECT * FROM food_entry ORDER BY loggedAt DESC LIMIT :limit")
+    fun observeLatest(limit: Int): Flow<List<FoodEntry>>
 
     @Query("SELECT * FROM food_entry ORDER BY id")
     suspend fun all(): List<FoodEntry>

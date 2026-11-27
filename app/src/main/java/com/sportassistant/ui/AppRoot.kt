@@ -104,6 +104,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
             }
             composable("food") {
                 val entries by vm.foodToday.collectAsState()
+                val frequent by vm.frequentFoods.collectAsState()
                 val health by vm.health.collectAsState()
                 val walks by vm.walks.collectAsState()
                 val analysis by vm.analysis.collectAsState()
@@ -113,6 +114,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                 FoodScreen(
                     profile,
                     entries,
+                    frequent,
                     health,
                     walkKcalToday = walks.filter { it.epochDay == today }.sumOf { it.kcal },
                     analysis = analysis,
@@ -123,6 +125,7 @@ private fun MainNav(vm: AppViewModel, profile: Profile) {
                     onDelete = vm::deleteFood,
                     onEstimate = vm::estimateNutrition,
                     onEstimateHandled = vm::clearEstimate,
+                    onUpdate = vm::updateFood,
                 )
             }
             composable("walk") {

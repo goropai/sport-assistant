@@ -16,8 +16,8 @@ android {
         applicationId = "com.sportassistant"
         minSdk = 26
         targetSdk = 35
-        versionCode = 15
-        versionName = "0.12.0"
+        versionCode = 16
+        versionName = "0.13.0"
 
         // HTTPS URL of a version.json (see README, "Updates"). Empty disables the update check.
         // Set in gradle.properties or with -PupdateUrl=...

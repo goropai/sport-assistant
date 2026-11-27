@@ -27,6 +27,7 @@ import kotlinx.coroutines.Dispatchers
 import com.sportassistant.data.AppDatabase
 import com.sportassistant.data.DayHealth
 import com.sportassistant.data.FoodEntry
+import com.sportassistant.data.FoodHistory
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -226,6 +227,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteFood(id: Long) {
         viewModelScope.launch { foodDao.delete(id) }
     }
+
+    fun updateFood(entry: FoodEntry) {
+        viewModelScope.launch { foodDao.update(entry) }
+    }
+
+    /** Foods eaten most often over the recent history, for one-tap adding. */
+    val frequentFoods: StateFlow<List<FoodEntry>> = foodDao.observeLatest(300)
+        .map { FoodHistory.frequent(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     // --- Posture / skin observations ---------------------------------------------------------
 
