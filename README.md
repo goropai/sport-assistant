@@ -27,7 +27,12 @@ Posture and skin check (Progress tab): cautious photo observations from Gemini w
 flag, a saved history and a first-vs-latest photo comparison. Wellness only, never a diagnosis; skin
 photos are kept only if the user opts in.
 
-Not yet: video analysis, exercise illustrations (emoji placeholders for now).
+Exercise illustrations: 13 of 14 exercises have an animated stick figure (two key poses, drawn in code
+by a small forward/inverse-kinematics engine in `figure/`). `FigureRenderTest` renders every pose to
+`app/build/figures/sheet.png` and checks the figures stay inside the scene. The eye-rest exercise
+still uses its emoji.
+
+Not yet: video analysis.
 
 ## Updates
 

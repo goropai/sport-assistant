@@ -110,7 +110,7 @@ fun LibraryScreen(onOpen: (Exercise) -> Unit) {
 fun ExerciseDetailScreen(ex: Exercise, onBack: () -> Unit, onCamera: (Exercise) -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedButton(onClick = onBack) { Text(stringResource(R.string.back)) }
-        Text(ex.emoji, fontSize = 72.sp, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+        ExerciseVisual(ex)
         Text(stringResource(ex.name), style = MaterialTheme.typography.headlineMedium)
         Text("${stringResource(ex.category.label)} · ${exerciseDose(ex)}", style = MaterialTheme.typography.labelLarge)
         Text(stringResource(ex.steps), style = MaterialTheme.typography.bodyLarge)
@@ -163,7 +163,7 @@ fun WorkoutScreen(plan: List<Exercise>, onFinish: (exercises: Int, seconds: Int)
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(stringResource(R.string.workout_step, index + 1, plan.size), style = MaterialTheme.typography.labelLarge)
-        Text(ex.emoji, fontSize = 72.sp)
+        ExerciseVisual(ex)
         Text(stringResource(ex.name), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
         if (ex.seconds > 0) {
             Text(
