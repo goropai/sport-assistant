@@ -42,6 +42,11 @@ Backup (Settings): export everything to one JSON file via the system file picker
 after confirmation (`backup/BackupCodec`, replaces the data in a single transaction). Photos and the
 Gemini key are never included.
 
+Reminders (Settings): movement and water at a chosen interval inside chosen active hours (optionally
+weekdays only), teeth at two chosen times. Each reminder is a one-off WorkManager job that schedules the
+next one from a pure, tested rule (`reminders/Schedule`); changes apply immediately and a reminder that
+the device slept through is skipped instead of arriving late.
+
 Visual style: no emoji anywhere in the UI. Icons are Material Symbols (rounded) from one place,
 `ui/AppIcons.kt`; exercise lists show a static thumbnail of the stick figure. `NoEmojiTest` fails the
 build if an emoji sneaks into code or strings.

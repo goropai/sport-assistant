@@ -235,11 +235,20 @@
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_reminders">Reminders</string>
-    <string name="settings_reminders_hint">Move and water reminders arrive hourly between 09:00 and 19:00; teeth at 08:00 and 20:00.</string>
+    <string name="settings_reminders_hint">Reminders arrive inside your active hours on a fixed schedule. Water is offset by 30 minutes from movement so they never land together. Changes apply immediately.</string>
     <string name="rem_move">Stand up and move</string>
     <string name="rem_water">Drink water</string>
     <string name="rem_teeth">Brush teeth</string>
-    <string name="settings_redo">Redo questionnaire</string>
+    <string name="rem_every">Repeat every</string>
+    <string name="rem_minutes_fmt">%1$d min</string>
+    <string name="rem_active_hours">Active hours for movement and water</string>
+    <string name="rem_from">From</string>
+    <string name="rem_to">To</string>
+    <string name="rem_weekdays">Only on weekdays</string>
+    <string name="rem_teeth_morning">Morning</string>
+    <string name="rem_teeth_evening">Evening</string>
+    <string name="rem_earlier">Earlier</string>
+    <string name="rem_later">Later</string>    <string name="settings_redo">Redo questionnaire</string>
 
     <!-- Notifications -->
     <string name="channel_name">Reminders</string>

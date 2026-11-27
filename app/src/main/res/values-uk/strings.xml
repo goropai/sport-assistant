@@ -235,11 +235,20 @@
     <!-- Settings -->
     <string name="settings_title">Налаштування</string>
     <string name="settings_reminders">Нагадування</string>
-    <string name="settings_reminders_hint">Нагадування про рух і воду приходять щогодини з 09:00 до 19:00, про зуби — о 08:00 і 20:00.</string>
+    <string name="settings_reminders_hint">Нагадування приходять в активні години за фіксованим розкладом. Вода зсунута на 30 хвилин відносно руху, щоб вони не збігалися. Зміни діють одразу.</string>
     <string name="rem_move">Встати й порухатись</string>
     <string name="rem_water">Випити води</string>
     <string name="rem_teeth">Почистити зуби</string>
-    <string name="settings_redo">Пройти опитування знову</string>
+    <string name="rem_every">Повторювати кожні</string>
+    <string name="rem_minutes_fmt">%1$d хв</string>
+    <string name="rem_active_hours">Активні години для руху та води</string>
+    <string name="rem_from">З</string>
+    <string name="rem_to">До</string>
+    <string name="rem_weekdays">Лише у будні</string>
+    <string name="rem_teeth_morning">Вранці</string>
+    <string name="rem_teeth_evening">Ввечері</string>
+    <string name="rem_earlier">Раніше</string>
+    <string name="rem_later">Пізніше</string>    <string name="settings_redo">Пройти опитування знову</string>
 
     <!-- Notifications -->
     <string name="channel_name">Нагадування</string>

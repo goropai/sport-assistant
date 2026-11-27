@@ -63,6 +63,35 @@ class BackupCodecTest {
     }
 
     @Test
+    fun `custom reminder timing round trips`() {
+        val custom = profile.copy(
+            moveEveryMin = 45, waterEveryMin = 120, dayStartMin = 7 * 60 + 30, dayEndMin = 21 * 60,
+            weekdaysOnly = true, teethMorningMin = 6 * 60 + 45, teethEveningMin = 22 * 60 + 30,
+        )
+        assertEquals(custom.copy(geminiKey = ""), roundTrip(data.copy(profile = custom)).profile)
+    }
+
+    @Test
+    fun `a backup from before reminder settings keeps the default timing`() {
+        val old = """{"app":"sport-assistant","version":1,"profile":{"remMove":false,"age":50}}"""
+        val p = BackupCodec.decode(old).profile
+        assertEquals(Profile().moveEveryMin, p.moveEveryMin)
+        assertEquals(Profile().dayStartMin, p.dayStartMin)
+        assertEquals(Profile().teethEveningMin, p.teethEveningMin)
+        assertFalse(p.remMove)
+    }
+
+    @Test
+    fun `out of range reminder values are clamped`() {
+        val text = """{"app":"sport-assistant","version":1,"profile":{"moveEveryMin":1,"dayStartMin":-5,"dayEndMin":99999,"teethMorningMin":2000}}"""
+        val p = BackupCodec.decode(text).profile
+        assertEquals(15, p.moveEveryMin)
+        assertEquals(0, p.dayStartMin)
+        assertEquals(1439, p.dayEndMin)
+        assertEquals(1439, p.teethMorningMin)
+    }
+
+    @Test
     fun `observation photos are not part of a backup`() {
         val text = BackupCodec.encode(data, "now")
         assertFalse(text.contains("/data/user/0"))

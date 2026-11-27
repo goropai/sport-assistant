@@ -31,6 +31,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import java.util.Locale
@@ -122,6 +123,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     /** Null until the first read from disk completes. */
     val profile: StateFlow<Profile?> =
         store.profile.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    init {
+        // Reminders are a chain of one-off jobs; re-arming it on every launch keeps it alive even if the
+        // system dropped a job (force stop, aggressive battery savers).
+        viewModelScope.launch { Reminders.sync(getApplication(), store.profile.first()) }
+    }
 
     val stats: StateFlow<Stats> = dao.observeAll()
         .map { computeStats(it, LocalDate.now().toEpochDay()) }

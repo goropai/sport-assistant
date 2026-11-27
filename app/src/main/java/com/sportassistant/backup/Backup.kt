@@ -1,6 +1,7 @@
 package com.sportassistant.backup
 
 import com.sportassistant.data.Complaint
+import com.sportassistant.data.MIN_REMINDER_INTERVAL
 import com.sportassistant.data.FoodEntry
 import com.sportassistant.data.Observation
 import com.sportassistant.data.Profile
@@ -99,6 +100,9 @@ object BackupCodec {
         .put("sitHours", p.sitHours).put("activity", p.activity)
         .put("complaints", JSONArray(p.complaints.map { it.name }))
         .put("remMove", p.remMove).put("remWater", p.remWater).put("remTeeth", p.remTeeth)
+        .put("moveEveryMin", p.moveEveryMin).put("waterEveryMin", p.waterEveryMin)
+        .put("dayStartMin", p.dayStartMin).put("dayEndMin", p.dayEndMin).put("weekdaysOnly", p.weekdaysOnly)
+        .put("teethMorningMin", p.teethMorningMin).put("teethEveningMin", p.teethEveningMin)
         .put("sex", p.sex.name).put("repSensitivity", p.repSensitivity)
 
     private fun profileOf(o: JSONObject): Profile {
@@ -117,6 +121,14 @@ object BackupCodec {
             remMove = o.optBoolean("remMove", d.remMove),
             remWater = o.optBoolean("remWater", d.remWater),
             remTeeth = o.optBoolean("remTeeth", d.remTeeth),
+            // Reminder timing arrived after the first backups: older files simply keep the defaults.
+            moveEveryMin = o.optInt("moveEveryMin", d.moveEveryMin).coerceAtLeast(MIN_REMINDER_INTERVAL),
+            waterEveryMin = o.optInt("waterEveryMin", d.waterEveryMin).coerceAtLeast(MIN_REMINDER_INTERVAL),
+            dayStartMin = o.optInt("dayStartMin", d.dayStartMin).coerceIn(0, 1439),
+            dayEndMin = o.optInt("dayEndMin", d.dayEndMin).coerceIn(0, 1439),
+            weekdaysOnly = o.optBoolean("weekdaysOnly", d.weekdaysOnly),
+            teethMorningMin = o.optInt("teethMorningMin", d.teethMorningMin).coerceIn(0, 1439),
+            teethEveningMin = o.optInt("teethEveningMin", d.teethEveningMin).coerceIn(0, 1439),
             sex = Sex.entries.firstOrNull { it.name == o.optString("sex") } ?: d.sex,
             repSensitivity = o.optInt("repSensitivity", d.repSensitivity).coerceIn(0, 2),
             geminiKey = "",

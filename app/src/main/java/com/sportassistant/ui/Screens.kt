@@ -288,10 +288,7 @@ fun SettingsScreen(
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
         Text(stringResource(R.string.settings_reminders), style = MaterialTheme.typography.titleMedium)
-        SwitchRow(R.string.rem_move, profile.remMove) { onChange(profile.copy(remMove = it)) }
-        SwitchRow(R.string.rem_water, profile.remWater) { onChange(profile.copy(remWater = it)) }
-        SwitchRow(R.string.rem_teeth, profile.remTeeth) { onChange(profile.copy(remTeeth = it)) }
-        Text(stringResource(R.string.settings_reminders_hint), style = MaterialTheme.typography.bodySmall)
+        ReminderSettings(profile, onChange)
         OutlinedButton(onClick = onRedo, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.settings_redo)) }
 
         Text(stringResource(R.string.settings_ai), style = MaterialTheme.typography.titleMedium)
@@ -400,7 +397,7 @@ private fun UpdateSection(update: UpdateState, onCheck: () -> Unit, onInstall: (
 }
 
 @Composable
-private fun SwitchRow(label: Int, checked: Boolean, onChecked: (Boolean) -> Unit) {
+internal fun SwitchRow(label: Int, checked: Boolean, onChecked: (Boolean) -> Unit) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(stringResource(label), Modifier.weight(1f))
         Switch(checked, onChecked)

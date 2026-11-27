@@ -23,6 +23,16 @@ data class Profile(
     val remMove: Boolean = true,
     val remWater: Boolean = true,
     val remTeeth: Boolean = true,
+    /** How often the movement / water reminders repeat inside the active window, in minutes. */
+    val moveEveryMin: Int = 60,
+    val waterEveryMin: Int = 90,
+    /** Active window for movement and water reminders, in minutes after midnight. */
+    val dayStartMin: Int = 9 * 60,
+    val dayEndMin: Int = 19 * 60,
+    val weekdaysOnly: Boolean = false,
+    /** Times of day (minutes after midnight) for brushing teeth. */
+    val teethMorningMin: Int = 8 * 60,
+    val teethEveningMin: Int = 20 * 60,
     val sex: Sex = Sex.UNSPECIFIED,
     /** The user's own Gemini API key; empty disables photo analysis. Stored in the app-private DataStore. */
     val geminiKey: String = "",
@@ -31,6 +41,9 @@ data class Profile(
 )
 
 private val Context.dataStore by preferencesDataStore("profile")
+
+/** Shortest allowed reminder interval (mirrors reminders.Schedule.MIN_INTERVAL_MIN). */
+const val MIN_REMINDER_INTERVAL = 15
 
 class ProfileStore(private val context: Context) {
     private object K {
@@ -44,6 +57,13 @@ class ProfileStore(private val context: Context) {
         val remMove = booleanPreferencesKey("rem_move")
         val remWater = booleanPreferencesKey("rem_water")
         val remTeeth = booleanPreferencesKey("rem_teeth")
+        val moveEvery = intPreferencesKey("rem_move_every")
+        val waterEvery = intPreferencesKey("rem_water_every")
+        val dayStart = intPreferencesKey("rem_day_start")
+        val dayEnd = intPreferencesKey("rem_day_end")
+        val weekdaysOnly = booleanPreferencesKey("rem_weekdays_only")
+        val teethMorning = intPreferencesKey("rem_teeth_morning")
+        val teethEvening = intPreferencesKey("rem_teeth_evening")
         val sex = stringPreferencesKey("sex")
         val geminiKey = stringPreferencesKey("gemini_key")
         val repSensitivity = intPreferencesKey("rep_sensitivity")
@@ -63,6 +83,13 @@ class ProfileStore(private val context: Context) {
             it[K.remMove] = p.remMove
             it[K.remWater] = p.remWater
             it[K.remTeeth] = p.remTeeth
+            it[K.moveEvery] = p.moveEveryMin
+            it[K.waterEvery] = p.waterEveryMin
+            it[K.dayStart] = p.dayStartMin
+            it[K.dayEnd] = p.dayEndMin
+            it[K.weekdaysOnly] = p.weekdaysOnly
+            it[K.teethMorning] = p.teethMorningMin
+            it[K.teethEvening] = p.teethEveningMin
             it[K.sex] = p.sex.name
             it[K.geminiKey] = p.geminiKey
             it[K.repSensitivity] = p.repSensitivity
@@ -84,6 +111,13 @@ class ProfileStore(private val context: Context) {
             remMove = this[K.remMove] ?: d.remMove,
             remWater = this[K.remWater] ?: d.remWater,
             remTeeth = this[K.remTeeth] ?: d.remTeeth,
+            moveEveryMin = (this[K.moveEvery] ?: d.moveEveryMin).coerceAtLeast(MIN_REMINDER_INTERVAL),
+            waterEveryMin = (this[K.waterEvery] ?: d.waterEveryMin).coerceAtLeast(MIN_REMINDER_INTERVAL),
+            dayStartMin = (this[K.dayStart] ?: d.dayStartMin).coerceIn(0, 1439),
+            dayEndMin = (this[K.dayEnd] ?: d.dayEndMin).coerceIn(0, 1439),
+            weekdaysOnly = this[K.weekdaysOnly] ?: d.weekdaysOnly,
+            teethMorningMin = (this[K.teethMorning] ?: d.teethMorningMin).coerceIn(0, 1439),
+            teethEveningMin = (this[K.teethEvening] ?: d.teethEveningMin).coerceIn(0, 1439),
             sex = Sex.entries.firstOrNull { it.name == this[K.sex] } ?: d.sex,
             geminiKey = this[K.geminiKey] ?: d.geminiKey,
             repSensitivity = (this[K.repSensitivity] ?: d.repSensitivity).coerceIn(0, 2),

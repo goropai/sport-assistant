@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccessibilityNew
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.BarChart
 import androidx.compose.material.icons.rounded.Bolt
@@ -69,6 +71,8 @@ object AppIcons {
     val Ai = Icons.Rounded.AutoAwesome
     val Recalculate = Icons.Rounded.Refresh
     val Delete = Icons.Rounded.Close
+    val Add = Icons.Rounded.Add
+    val Remove = Icons.Rounded.Remove
     val Library = Icons.Rounded.MenuBook
     val Nose = Icons.Rounded.Face
     val Posture = Icons.Rounded.AccessibilityNew
